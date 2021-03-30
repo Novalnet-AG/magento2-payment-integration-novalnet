@@ -1,0 +1,165 @@
+<!--
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+-->
+<div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
+    <div class="payment-method-title field choice">
+        <input type="radio"
+               name="payment[method]"
+               class="radio"
+               data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
+        <label data-bind="attr: {'for': getCode()}" class="label"><span data-bind="text: getTitle()"></span></label>
+    </div>
+
+    <div class="payment-method-content">
+        <!-- ko foreach: getRegion('messages') -->
+        <!-- ko template: getTemplate() --><!-- /ko -->
+        <!--/ko-->
+
+        <div>
+            <span data-bind="foreach: {data: getIcons(), as: 'novalnetCcIcons'}">
+                <img data-bind="attr: {src: novalnetCcIcons.src, alt: novalnetCcIcons.title, title: novalnetCcIcons.title}"/>
+            </span>
+        </div>
+
+        <div class="payment-method-billing-address">
+            <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+
+        <div class="nn-mode" data-bind="if: getTestmode()">
+            <div class="nn-test-drive"><!-- ko i18n: 'TestMode'--><!-- /ko --></div>
+        </div>
+
+        <form class="form" class="form" method="post" data-bind="attr: {id: getCode()}">
+            <div data-bind="attr: {id: getCode() + '_saved_payments'}, foreach: {data: getStoredPayments(), as: 'storedPayment'}">
+                <div class="novalnet-payment-saved-payments" data-bind="attr: {title: $data.key}">
+                    <input type="radio" name="payment[saved_payment]" class=""
+                        data-bind="checked: $parent.novalnetPaymentToken,
+                            value: storedPayment.NnToken,
+                            attr: {id: ('nn_token_' + storedPayment.id)}">
+                    <label data-bind="attr: {for: ('nn_token_' + storedPayment.id)}">
+                        <span>
+                            <img class="nnpayment-logo" data-bind="attr: {src: $parent.getCardlogo(storedPayment.token_info.NnCardBrand), alt: storedPayment.token_info.NnCardBrand, title: storedPayment.token_info.NnCardBrand}"/>
+                        </span>
+                        <span data-bind="text: storedPayment.text"></span>
+                    </label>
+                    <a href="#" data-bind="click: function() {
+                            $parent.removeToken(storedPayment.id);
+                        },
+                        attr: {class: 'nntoken action delete', 'nntoken-id': storedPayment.id},
+                        title: $t('Remove Novalnet Token')">
+                        <span data-bind="i18n: 'Remove'"></span>
+                    </a>
+                </div>
+            </div>
+
+            <div data-bind="if: getStoredPayments().length">
+                <div class="novalnet-payment-new_account">
+                    <input type="radio" name="payment[saved_payment]" value="new_account" class=""
+                        data-bind="checked: novalnetPaymentToken, attr: {id: getCode() + '_new_account'}">
+                    <label data-bind="attr: {for: getCode() + '_new_account'}">
+                        <span><!-- ko i18n: 'Add new card details'--><!-- /ko --></span>
+                    </label>
+                </div>
+            </div>
+            <br>
+
+            <fieldset data-bind="attr: {class: 'fieldset payment items ' + getCode(), id: 'novalnet_form_cc'}">
+                <div class="field required" style="max-width:100%">
+                    <div class="control _with-tooltip">
+                        <span data-bind="i18n: 'More security with the new Payment Policy (PSD2) Info'"></span>
+                        <div class="field-tooltip toggle">
+                            <!-- ko if: (tooltip.link)--><!-- /ko -->
+                                <!-- ko if: (!tooltip.link)-->
+                                    <span id="tooltip" class="field-tooltip-action action-help" tabindex="0" data-toggle="dropdown" data-bind="mageInit: {'dropdown':{'activeClass': '_active', 'parent': '.field-tooltip.toggle'}}" aria-labelledby="tooltip-label" aria-haspopup="true" aria-expanded="false" role="button"></span>
+                                <!-- /ko -->
+                             <div class="field-tooltip-content" data-target="dropdown" aria-hidden="true"><!-- ko i18n: "European card issuing banks often requires a password or some other form of authentication (EU Payment Services Directive 'PSD2') for secure payment. If the payment is not successful, you can try again. If you have any further questions, please contact your bank." --><!-- /ko --></div>
+                        </div>
+                    </div>
+                </div>
+                <iframe width='100%'
+                        frameborder="0"
+                        border="0"
+                        scrolling="no"
+                        id="novalnet_iframe">
+                </iframe>
+                <div class="field" data-bind="attr: {id: getCode() + '_store_payment_div'},
+                    if: showStorePayment(),
+                    visible: showStorePayment()">
+                    <div class="control">
+                        <input type="checkbox"
+                            name="payment[novalnetCc_store_payment]"
+                            data-bind="attr: {id: getCode() + '_store_payment'}" checked />
+                        <label data-bind="attr: {for: getCode() + '_store_payment'}" class="label">
+                            <span><!-- ko i18n: 'Save for future purchase'--><!-- /ko --></span>
+                        </label>
+                    </div>
+                </div>
+            </fieldset>
+            <div class="info-box">
+                <div class="nn-cc-description">
+                    <p>
+                        <!-- ko i18n: 'The amount will be debited from your credit/debit card'--><!-- /ko -->
+                    </p>
+                </div>
+                <br>
+                <p class="nn-instructions" data-bind="html: getInstructions()"></p>
+            </div>
+            <input type="hidden"
+                   value="0"
+                   name="payment[novalnetCc_gethash]"
+                   data-bind="attr: {id: getCode() + '_gethash'}, value: ccHashValue" />
+            <input type="hidden"
+                   value=""
+                   name="payment[novalnetCc_hash]"
+                   data-bind="attr: {id: getCode() + '_hash'}, value: ccHashValue" />
+            <input type="hidden"
+                   value=""
+                   name="payment[novalnetCc_uniqueid]"
+                   data-bind="attr: {id: getCode() + '_uniqueid'}, value: ccUniqueid" />
+            <input type="hidden"
+                   value=""
+                   name="payment[novalnetCc_do_redirect]"
+                   data-bind="attr: {id: getCode() + '_do_redirect'}, value: ccDoRedirect" />
+        </form>
+
+        <div class="checkout-agreements-block">
+            <!-- ko foreach: $parent.getRegion('before-place-order') -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+        <div class="actions-toolbar">
+            <div class="primary">
+                <button class="action primary checkout"
+                        type="submit"
+                        data-bind="
+                        click: placeOrder,
+                        attr: {id: getCode() + '_submit', title: $t('Place Order')},
+                        css: {disabled: !isPlaceOrderActionAllowed()},
+                        enable: (getCode() == isChecked())
+                        "
+                        disabled>
+                    <span data-bind="i18n: 'Place Order'"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
