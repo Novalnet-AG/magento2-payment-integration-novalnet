@@ -1,5 +1,8 @@
 *** Changelog ***
 
+= 12.1.0 - 2021.05.06 =
+* New      - Implemented Apple pay payment
+
 = 12.0.4 - 2021.02.25 =
 * New      - Implemented enforce 3D secure payment for countries outside EU
 * Fix      - Transaction amount mismatch while adding tax during Credit Card authentication
