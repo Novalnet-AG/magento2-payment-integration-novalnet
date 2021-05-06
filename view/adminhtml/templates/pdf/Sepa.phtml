@@ -1,0 +1,88 @@
+<?php
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+
+/**
+ * @var $block \Novalnet\Payments\Block\Info\Sepa
+ */
+$info = $block->getInfo();
+$transactionId = $block->getAdditionalData('NnTid') ? $block->getAdditionalData('NnTid') : $info->getLastTransId();
+$paymentStatus = $block->novalnetHelper()->getStatus($block->getAdditionalData('NnStatus'), $info->getOrder());
+?>
+<?php if ($info): ?>
+    <?php if ($block->getAdditionalData('NnTestMode')): ?>
+        <div>
+            <?= /* @noEscape */ __('Test order') ?>
+        </div>
+    <?php endif; ?>{{pdf_row_separator}}
+    <?= $block->escapeHtml($block->getMethod()->getTitle()) ?><br>
+{{pdf_row_separator}}
+    <?php if ($transactionId): ?>
+        <?= /* @noEscape */ __('Novalnet Transaction ID: '). $transactionId ?><br><br>
+    <?php endif; ?>
+{{pdf_row_separator}}
+    <?php
+    if ($block->getAdditionalData('NnGuarantee')) {
+        /* @noEscape */ echo __('This is processed as a guarantee payment') . '<br /><br />';
+
+        if ($paymentStatus == 'PENDING') {
+            /* @noEscape */ echo __('Your order is under verification and we will soon update you 
+            with the order status. Please note that this may take upto 24 hours.') . '<br /><br />';
+        }
+    }
+    ?>
+{{pdf_row_separator}}
+    <?php if ($block->getAdditionalData('ApiProcess') == 'capture'): ?>
+        <?= /* @noEscape */ __(
+            'The transaction has been confirmed on %1',
+            $block->getAdditionalData('ApiProcessedAt')
+        ) ?><br><br>
+    <?php elseif ($block->getAdditionalData('ApiProcess') == 'void'): ?>
+        <?= /* @noEscape */ __(
+            'The transaction has been canceled on %1',
+            $block->getAdditionalData('ApiProcessedAt')
+        ) ?><br><br>
+    <?php endif; ?>
+{{pdf_row_separator}}
+    <?php if ($block->getAdditionalData('NnRefunded')): ?>
+        <?php foreach ($block->getAdditionalData('NnRefunded') as $key => $value): ?>
+            <?php if (preg_match("/-refund/i", $value['reftid'])): ?>
+                <?= /* @noEscape */ __(
+                    'Refund has been initiated for the TID:%1 with the amount %2',
+                    $block->novalnetHelper()->makeValidNumber($value['reqtid']),
+                    $value['refamount']
+                ) ?><br>
+            <?php else: ?>
+                <?= /* @noEscape */ __(
+                    'Refund has been initiated for the TID: %1 with the amount %2. New TID:%3 for the refunded amount %4',
+                    $block->novalnetHelper()->makeValidNumber($value['reqtid']),
+                    $block->getGrandTotal(),
+                    $block->novalnetHelper()->makeValidNumber($value['reftid']),
+                    $value['refamount']
+                ) ?><br>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
+{{pdf_row_separator}}
+    <?php if ($block->getAdditionalData('NnComments')): ?>
+        <?= /* @noEscape */ $block->getAdditionalData('NnComments') ?>
+    <?php endif; ?>
+<?php else: ?>
+    <?= /* @noEscape */ __('Error in getting payment method') ?>
+<?php endif; ?>

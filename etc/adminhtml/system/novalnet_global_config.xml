@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+-->
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <group id="novalnet" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>Configuration</label>
+        <field id="signature" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Product Activation Key</label>
+            <config_path>payment/novalnet/signature</config_path>
+        </field>
+        <field id="payment_access_key" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Payment Access Key</label>
+            <config_path>payment/novalnet/payment_access_key</config_path>
+        </field>
+        <field id="vendor_config" translate="button_label attribute button_label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <attribute type="button_label">Activate</attribute>
+            <frontend_model>Novalnet\Payment\Block\System\Config\Form\Field\VendorAutoConfig</frontend_model>
+            <config_path>payment/novalnet/vendor_config</config_path>
+            <comment><![CDATA[Enter the Novalnet Product activation key that is required for authentication and click Activate. You will find the Product activation key in the <a href='https://admin.novalnet.de/' target='_blank'>Novalnet Admin Portal</a>: PROJECT > Choose your project > Shop Parameters > API Signature (Product activation key)]]></comment>
+        </field>
+        <field id="client_key" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Client Key</label>
+            <config_path>payment/novalnet/client_key</config_path>
+            <frontend_model>Novalnet\Payment\Block\System\Config\Form\Field\Disabled</frontend_model>
+        </field>
+        <field id="tariff_id" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Select Tariff ID</label>
+            <config_path>payment/novalnet/tariff_id</config_path>
+            <tooltip>Select a Tariff ID to match the preferred tariff plan you created at the Novalnet Admin Portal for this project</tooltip>
+        </field>
+        <field id="live_mode" translate="label" type="multiselect" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Enable Live Mode</label>
+            <tooltip>Selected payment methods will be in Live Mode</tooltip>
+            <source_model>Novalnet\Payment\Model\Adminhtml\Source\Activemethods</source_model>
+            <can_be_empty>1</can_be_empty>
+            <config_path>payment/novalnet/live_mode</config_path>
+        </field>
+        <field id="enable_payment_logo" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Display payment method logo</label>
+            <tooltip>The payment method logo will be displayed on the checkout page</tooltip>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>payment/novalnet/enable_payment_logo</config_path>
+        </field>
+        <field id="restore_cart" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Products remain in the shopping cart after cancelled payment</label>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>payment/novalnet/restore_cart</config_path>
+        </field>
+        <group id="merchant_script" translate="label" type="text" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Notification / Webhook URL Setup</label>
+            <comment><![CDATA[To setup your shop Notification / Webhook URL, you must add the following webhook endpoint in this format <b>{Shop_url/rest/V1/novalnet/callback}</b> in below <b>Notification / Webhook URL</b> field and click on <b>Configure</b> button to receive notification about transactions.]]></comment>
+            <field id="vendor_script_url" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label><![CDATA[Notification &amp; Webhook URL]]></label>
+                <comment>Notification / Webhook URL is required to keep the merchant’s database/system synchronized with the Novalnet account (e.g. delivery status). Refer the Installation Guide for more information</comment>
+                <frontend_model>Novalnet\Payment\Block\System\Config\Form\Field\WebhookURL</frontend_model>
+                <validate>validate-url validate-no-html-tags</validate>
+                <config_path>payment/merchant_script/vendor_script_url</config_path>
+            </field>
+            <field id="test_mode" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                <label>Allow manual testing of the Notification / Webhook URL</label>
+                <tooltip>Enable this to test the Novalnet Notification / Webhook URL manually. Disable this before setting your shop live to block unauthorized calls from external parties</tooltip>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <config_path>payment/merchant_script/test_mode</config_path>
+            </field>
+            <field id="mail_to_addr" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Send e-mail to</label>
+                <validate>validate-no-html-tags validate-email</validate>
+                <tooltip>Notification / Webhook URL execution messages will be sent to this e-mail</tooltip>
+                <config_path>payment/merchant_script/mail_to_addr</config_path>
+            </field>
+        </group>
+    </group>
+
+</include>

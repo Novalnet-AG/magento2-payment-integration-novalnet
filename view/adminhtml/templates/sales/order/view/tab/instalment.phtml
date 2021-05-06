@@ -1,0 +1,194 @@
+<?php
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+
+$order = $block->getOrder();
+$customerUrl = $block->getCustomerViewUrl();
+?>
+
+<section class="admin__page-section order-view-account-information">
+    <div class="admin__page-section-title">
+        <span class="title"><?= $block->escapeHtml(__('Instalment')) ?></span>
+    </div>
+    <div class="admin__page-section-content">
+        <div class="admin__page-section-item order-information">
+            <div class="admin__page-section-item-title">
+                <span class="title">
+                    <span><?= $block->escapeHtml(__('Customer details')) ?></span>
+                </span>
+            </div>
+            <div class="admin__page-section-item-content">
+                <table class="admin__table-secondary order-information-table">
+                     <tr>
+                        <th><?= $block->escapeHtml(__('Customer Name')) ?></th>
+                        <td>
+                            <?php if ($customerUrl): ?>
+                                <a href="<?= $block->escapeUrl($customerUrl) ?>" target="_blank">
+                                    <span><?= $block->escapeHtml($order->getCustomerName()) ?></span>
+                                </a>
+                            <?php else: ?>
+                                <?= $block->escapeHtml($order->getCustomerName()) ?>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('Email')) ?></th>
+                        <td><a href="mailto:<?= $block->escapeHtml($order->getCustomerEmail()) ?>"><?= $block->escapeHtml($order->getCustomerEmail()) ?></a></td>
+                    </tr>
+                    <?php if ($block->isSingleStoreMode() == false):?>
+                        <tr>
+                            <th><?= $block->escapeHtml(__('Purchased From')) ?></th>
+                            <td><?= $block->escapeHtml($block->getOrderStoreName(), ['br']) ?></td>
+                        </tr>
+                    <?php endif; ?>
+                </table>
+            </div>
+        </div>
+
+        <div class="admin__page-section-item order-account-information">
+            <div class="admin__page-section-item-title">
+                <span class="title">
+                    <span><?= $block->escapeHtml(__('Instalment Information')) ?></span>
+                </span>
+            </div>
+            <div class="admin__page-section-item-content">
+                <table class="admin__table-secondary order-account-information-table">
+                    <tbody>
+                        <tr>
+                            <th><?= /* @noEscape */ __('Total paid amount') ?></th>
+                            <td><b><?= /* @noEscape */ $block->updateCurrency($block->getAdditionalData('InstallPaidAmount'), true, false);  ?></b></td>
+                        </tr>
+                        <tr>
+                            <th><?= /* @noEscape */ __('Instalment Cycle Amount') ?></th>
+                            <td><b><?= /* @noEscape */ $block->getAdditionalData('InstallCycleAmount') ? $block->updateCurrency($block->getAdditionalData('InstallCycleAmount')) : '-' ?></b></td>
+                        </tr>
+                        <tr>
+                            <th><?= /* @noEscape */ __('Paid Instalments') ?></th>
+                            <td><b><?= /* @noEscape */ $block->getAdditionalData('PaidInstall') ?></b></td>
+                        </tr>
+                        <tr>
+                            <th><?= /* @noEscape */ __('Due Instalments') ?></th>
+                            <td><b><?= /* @noEscape */ $block->getAdditionalData('DueInstall') ? $block->getAdditionalData('DueInstall') : 0?></b></td>
+                        </tr>
+                        <tr>
+                            <th><?= /* @noEscape */ __('Next Instalment Date') ?></th>
+                            <td><b><?= /* @noEscape */ $block->getAdditionalData('NextCycle') ? $block->getFormatedDate($block->getAdditionalData('NextCycle')) : '-' ?></b></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="admin__page-section order-paymnet-summary-information">
+    <div class="admin__page-section-title">
+        <span class="title"><?= $block->escapeHtml(__('Instalment Summary')) ?></span>
+    </div>
+    <div class="admin__page-section-item-content">
+        <?php
+            $payment = $order->getPayment();
+            $tid = $payment->getLastTransId();
+        ?>
+        <?php if ($tid && !$block->getAdditionalData('InstalmentCancel')): ?>
+            <form method="get" action="<?= /* @noEscape */ $block->getUrl('novalnetpayment/sales/refund', ['order_id' => $block->getOrder()->getId()]) ?>" onsubmit="return confirm(<?= /* @noEscape */ __('Do you really want to cancel the instalment?') ?>);">
+                <input type="hidden" class="admin__control-text" name="nn-refund-key" value="1">
+                <input type="hidden" class="admin__control-text" name="nn-instalment-cancel" value="1">
+                <input type="hidden" class="admin__control-text" name="nn-refund-tid" value="<?= /* @noEscape */ $tid ?>">
+                <input type="submit" value="<?= /* @noEscape */ __('Instalment cancel') ?>">
+            </form>
+            <br>
+        <?php endif; ?>
+        <table class="admin__table-secondary paymnet-summary-information-table">
+            <tbody>
+                <tr>
+                    <td><b><?= /* @noEscape */ __('S.No') ?></b></td>
+                    <td><b><?= /* @noEscape */ __('Amount') ?></b></td>
+                    <td><b><?= /* @noEscape */ __('Paid Date') ?></b></td>
+                    <td><b><?= /* @noEscape */ __('Next Instalment Date') ?></b></td>
+                    <td><b><?= /* @noEscape */ __('Status') ?></b></td>
+                    <td><b><?= /* @noEscape */ __('Reference') ?></b></td>
+                </tr>
+                <?php
+                    $InstalmentDetails = $block->getAdditionalData('InstalmentDetails');
+                    ksort($InstalmentDetails);
+                    $last = count($InstalmentDetails);
+                ?>
+                <?php foreach ($InstalmentDetails as $key => $value): ?>
+                    <tr>
+                        <td><?= /* @noEscape */ $key ?></td>
+                        <td>
+                            <div id="nn-amount-<?= /* @noEscape */ $key ?>">
+                                <?php
+                                if ($last == $key) {
+                                    $total = $order->getBaseGrandTotal();
+                                    $cycleAmount = $value['amount'];
+                                    $lastCycleAmount = $total-($cycleAmount*$last);
+                                    $cycleAmount += $lastCycleAmount;
+                                } else {
+                                    $cycleAmount = $value['amount'];
+                                }
+                                ?>
+                                <?= /* @noEscape */ $block->updateCurrency($cycleAmount, true, false) ?>
+                                <?php if (!empty($value['reference'])): ?>
+                                    <a id="nn-refund-<?= /* @noEscape */ $key ?>"><?= /* @noEscape */ __('Refund') ?></a>
+                                <?php endif; ?>
+                            </div>
+                            <div id="nn-refund-details-<?= /* @noEscape */ $key ?>" style="display: none">
+                            <p><?= /* @noEscape */ __('Please enter the refund amount') ?></p>
+                            <form method="get" action="<?= /* @noEscape */ $block->getUrl('novalnetpayment/sales/refund', ['order_id' => $block->getOrder()->getId()]) ?>">
+                                <input type="text" class="admin__control-text" name="nn-refund-amount" value ="<?= /* @noEscape */ round($value['amount'], 2) * 100 ?>">
+                                <input type="hidden" class="admin__control-text" name="nn-refund-key" value="<?= /* @noEscape */ $key ?>">
+                                <input type="hidden" class="admin__control-text" name="nn-refund-tid" value="<?= /* @noEscape */ $value['reference'] ?>">
+                                <input type="submit" value="<?= /* @noEscape */ __('Refund') ?>">
+                                <input type="button" value="<?= /* @noEscape */ __('Cancel') ?>" id="nn-cancel-<?= /* @noEscape */ $key ?>">
+                            </form>
+                            <i><?= /* @noEscape */ __('(in minimum unit of currency. E.g. enter 100 which is equal to 1.00)') ?></i>
+                            <script type="text/javascript">
+                            require([
+                                "jquery",
+                                "mage/calendar"
+                                ], function($){
+                                    var key = '<?= /* @noEscape */ $key; ?>';
+                                    $('#nn-refund-' + key).click(function(){
+                                        $('#nn-refund-details-' + key).attr("style", "display:block");
+                                        $('#nn-amount-' + key).attr("style", "display:none");
+                                    });
+                                    $('#nn-cancel-' + key).click(function(){
+                                        $('#nn-refund-details-' + key).attr("style", "display:none");
+                                        $('#nn-amount-' + key).removeAttr("style");
+                                    });
+                                });
+                            </script>
+                            </div>
+                        </td>
+                        <td><?= /* @noEscape */ !empty($value['paidDate']) ? $block->getFormatedDate($value['paidDate']) : '-' ?></td>
+                        <td><?= /* @noEscape */ !empty($value['nextCycle']) ? $block->getFormatedDate($value['nextCycle']) : '-' ?></td>
+                        <?php if ($value['status'] == 'Paid'): ?>
+                            <td><p style="color: green"><b><?= /* @noEscape */ __($value['status']) ?></b></p></td>
+                        <?php else: ?>
+                            <td><p style="color: #eb5202"><b><?= /* @noEscape */ __($value['status']) ?></b></p></td>
+                        <?php endif; ?>
+                        <td><?= /* @noEscape */ !empty($value['reference']) ? $value['reference'] : '-' ?></td>
+                    </tr>
+                <?php endforeach ?>
+            </tbody>
+        </table>
+    </div>
+</section>

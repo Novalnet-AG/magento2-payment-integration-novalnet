@@ -1,0 +1,91 @@
+<?php
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+
+/**
+ * @var $block \Novalnet\Payments\Block\Info\Cashpayment
+ */
+$info = $block->getInfo();
+$transactionId = $block->getAdditionalData('NnTid') ? $block->getAdditionalData('NnTid') : $info->getLastTransId();
+$totalAmount = ($block->getAdditionalData('NnAmount')) ? $block->getAdditionalData('NnAmount') : $block->getGrandTotal();
+?>
+<?php if ($info): ?>
+    <?php if ($block->getAdditionalData('NnTestMode')): ?>
+        <div>
+            <?= /* @noEscape */ __('Test order') ?>
+        </div>
+    <?php endif; ?>{{pdf_row_separator}}
+    <?= $block->escapeHtml($block->getMethod()->getTitle()) ?><br>
+{{pdf_row_separator}}
+    <?php if ($transactionId): ?>
+        <?= /* @noEscape */ __('Novalnet Transaction ID: '). $transactionId ?><br><br>
+    <?php endif; ?>
+{{pdf_row_separator}}
+    <?php if ($block->getAdditionalData('CpDueDate') && (empty($block->getAdditionalData('NnPaid')) || $block->getAdditionalData('NnPaid') != 1)): ?>
+        <?= /* @noEscape */ __('Slip expiry date: %1', $block->getAdditionalData('CpDueDate')) ?><br><br>
+    <?php endif; ?>
+{{pdf_row_separator}}
+    <?php if ($block->getAdditionalData('dueDateUpdateAt')): ?>
+        <?= /* @noEscape */ __(
+            'The transaction has been updated with amount %1 and slip expiry date with %2',
+            $totalAmount,
+            $block->getAdditionalData('CpDueDate')
+        ) ?><br><br>
+    <?php endif; ?>
+{{pdf_row_separator}}
+    <?php if (!preg_match('/invoice|creditmemo|shipment|callback/i', $block->getUrl('*/*/*', ['_current' => true])) &&
+        (empty($block->getAdditionalData('NnPaid')) || $block->getAdditionalData('NnPaid') != 1)): ?>
+        <?php if ($block->getAdditionalData('CashpaymentStores')): ?>
+            <?= /* @noEscape */ __('Store(s) near you:') ?><br><br>
+            <?php foreach ($block->getAdditionalData('CashpaymentStores') as $key => $value): ?>
+                <?= /* @noEscape */ $value['title'] ?><br>
+                <?= /* @noEscape */ $value['street'] ?><br>
+                <?= /* @noEscape */ $value['city'] ?><br>
+                <?= /* @noEscape */ $value['country'] ?><br>
+                <?= /* @noEscape */ $value['zipcode'] ?><br><br>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    <?php endif; ?>
+{{pdf_row_separator}}
+    <?php if ($block->getAdditionalData('NnRefunded')): ?>
+        <?php foreach ($block->getAdditionalData('NnRefunded') as $key => $value): ?>
+            <?php if (preg_match("/-refund/i", $value['reftid'])): ?>
+                <?= /* @noEscape */ __(
+                    'Refund has been initiated for the TID:%1 with the amount %2',
+                    $block->novalnetHelper()->makeValidNumber($value['reqtid']),
+                    $value['refamount']
+                ) ?><br>
+            <?php else: ?>
+                <?= /* @noEscape */ __(
+                    'Refund has been initiated for the TID: %1 with the amount %2. New TID:%3 for the refunded amount %4',
+                    $block->novalnetHelper()->makeValidNumber($value['reqtid']),
+                    $block->getGrandTotal(),
+                    $block->novalnetHelper()->makeValidNumber($value['reftid']),
+                    $value['refamount']
+                ) ?><br>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
+{{pdf_row_separator}}
+    <?php if ($block->getAdditionalData('NnComments')): ?>
+        <?= /* @noEscape */ $block->getAdditionalData('NnComments') ?>
+    <?php endif; ?>
+<?php else: ?>
+    <?= /* @noEscape */ __('Error in getting payment method') ?>
+<?php endif; ?>
