@@ -1,0 +1,175 @@
+<?php
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+?>
+<style type="text/css">
+    tr[id$='novalnet_global_novalnet_client_key'] {
+        display: none;
+    }
+    tr[id$='novalnet_global_nn_payment_methods_novalnetInvoiceGuarantee_guarantee_force_js'] {
+        display: none;
+    }
+    .nn_activat_btn {
+        display: block;
+        position: relative;
+        width: 55%;
+        margin: auto;
+    }
+</style>
+
+<div class="get-vendor-config">
+    <button type="button" class="button action-configure nn_activat_btn" id=<?= $block->getHtmlId() ?>>
+        <?= $block->escapeHtml($block->getButtonLabel()) ?>
+    </button>
+</div>
+
+<script type="text/javascript">
+require([
+    "jquery",
+    "Magento_Ui/js/modal/alert",
+    "mage/translate",
+    "mage/validation",
+    "jquery/validate",
+    "jquery/ui"
+], function ($, alert, $t) {
+    'use strict';
+    var state, signature_id = 'input[id$="novalnet_global_novalnet_signature"]';
+    var payment_access_key_id = 'input[id$="novalnet_global_novalnet_payment_access_key"]';
+
+    function checkVendorConfig() {
+        var signature = $.trim($(signature_id).val());
+        var payment_access_key = $.trim($(payment_access_key_id).val());
+
+        if ($.validator.validateElement($(signature_id)) && $.validator.validateElement($(payment_access_key_id))) {
+                        if ($(signature_id).val() != '' || $(payment_access_key_id).val() != '') {
+                                $('body').trigger('processStart');
+                                vendorAutoConfig(signature, payment_access_key);
+                        }
+        }
+    }
+
+    function vendorAutoConfig(signature, payment_access_key) {
+        $('#save').attr('disabled','disabled');
+        var requestURL = $('#nn_vendor_auto_config_url').val() + signature + '/' + payment_access_key;
+
+        $.ajax({
+            url: requestURL,
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                $('body').trigger('processStop');
+                getResponseValues(JSON.parse(response));
+                $('#save').removeAttr('disabled');
+            },
+            error: function(response) {
+                $('body').trigger('processStop');
+                $('#save').removeAttr('disabled');
+                alert({
+                    content: "<?= /* @noEscapes */__('Please enter a valid Product Activation Key and Payment Access key.') ?>"
+                });
+            }
+        });
+    }
+
+    function getResponseValues(response) {
+        
+        if (response.result.status == 'SUCCESS') {
+            var savedTariffId = $('#nn_tariff_id').val();
+            
+            if (state == 'change'){
+                $('input[id$="novalnet_global_novalnet_client_key"]').val(response.merchant.client_key);
+                alert({
+                    content: "<?= /* @noEscapes */__('Merchant details are configured successfully. Please select the Tariff ID and click') . ' ' . __('Save Config') . ' ' . __('button to save the configuration.') ?>"
+                });
+            }
+
+            var tariffs = response.merchant.tariff;
+            var tariffField = $('select[id$="novalnet_global_novalnet_tariff_id"]');
+
+            tariffField.find('option').remove();
+            tariffField.append(
+                $('<option></option>').attr('value', '').text('-- Please Select --')
+            );
+
+            $.each(tariffs, function(id, value) {
+                tariffField.append(
+                    $('<option></option>').attr('value', id).text(value.name)
+                );
+            });
+
+            if (savedTariffId && tariffs.hasOwnProperty(savedTariffId)) {
+                $('select[id$="novalnet_global_novalnet_tariff_id"] option[value=' + savedTariffId + ']').prop("selected", "selected");
+            }
+        } else {
+            alert({content: response.result.status_text});
+            return false;
+        }
+    }
+
+    $(document).ready(function($) {
+        $('#save').click(function () {
+            setTimeout(
+            function() {
+                $( "label.mage-error" ).each(function() {
+                    var label_id = $(this).attr('id');
+                    if (label_id) {
+                        var novalnet_payment = label_id.match(/novalnet/);
+                        if (novalnet_payment) {
+                            $('.novalnet-section').addClass('active');
+                            $('.novalnet-section').find('[id$=novalnet_global]').attr("style", "display:block");
+                            var novalnet_global = label_id.match(/novalnet_merchant_script/);
+                            if (novalnet_global)
+                            {
+                                $('.novalnet-section').find('.section-config').find('[id$=novalnet_global_novalnet]').attr("style", "display:block");
+                            } else {
+                                $('.novalnet-payment-section').addClass('active');
+                                $('.novalnet-payment-section').find('[id$=novalnet_global_nn_payment_methods]').attr("style", "display:block");
+                            }
+                            $("#"+label_id).closest('fieldset').attr("style", "display:block");
+                            $('html,body').animate({scrollTop: $("#"+label_id).offset().top - 200},'slow');
+                        }
+                    }
+                });
+            },
+            1200);
+        });
+
+        state = '';
+        checkVendorConfig();
+
+        $(signature_id + ',' + payment_access_key_id).keyup(function(){
+            $('input[id$="novalnet_global_novalnet_client_key"]').val('');
+            $('select[id$="novalnet_global_novalnet_tariff_id"]').html('<option value="">-- Please Select --</option>');
+            if ($(signature_id).val() == '' || $(payment_access_key_id).val() == '') {
+                $('.nn_activat_btn').attr('disabled','disabled');
+            } else {
+                $('.nn_activat_btn').removeAttr('disabled');
+            }
+        });
+
+        $('.nn_activat_btn').click(function () {
+            $.validator.validateElement($(payment_access_key_id));
+            if ($.validator.validateElement($(signature_id)) && $.validator.validateElement($(payment_access_key_id))) {
+                state = 'change';
+                checkVendorConfig();
+            }
+        });
+    });
+});
+</script>

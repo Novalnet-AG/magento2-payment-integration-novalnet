@@ -1,0 +1,57 @@
+<?php
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+?>
+<script type="text/javascript">
+require([
+    "jquery",
+    "Magento_Ui/js/modal/alert",
+    "mage/translate",
+    "mage/validation",
+    "jquery/validate",
+    "jquery/ui"
+], function ($, alert, $t) {
+    'use strict';
+
+    $.validator.addMethod(
+        "validate-sepaguarantee-force", 
+        function (i, e) {
+            if (i == 1) {
+                if(((e.id).indexOf("Sepa") != -1) && ($('select[id$="novalnet_global_nn_payment_methods_novalnetSepa_active"]').val() == 0)) {
+                    return false;
+                }
+            }
+            return true;
+         },
+        "<?= /* @noEscapes */__('Make sure the Direct Debit SEPA payment is enabled to use this option.') ?>"
+    );
+    $.validator.addMethod(
+        "validate-invoiceguarantee-force", 
+        function (i, e) {
+            if (i == 1) {
+                if(((e.id).indexOf("Invoice") != -1) && ($('select[id$="novalnet_global_nn_payment_methods_novalnetInvoice_active"]').val() == 0)) {
+                    return false;
+                }
+            }
+            return true;
+         },
+        "<?= /* @noEscapes */__('Make sure the Invoice payment is enabled to use this option.') ?>"
+    );
+});
+</script>

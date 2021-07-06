@@ -1,0 +1,53 @@
+<?php
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+
+/**
+ * @var $block Novalnet\Payment\Block\Method\Form\Invoice
+ */
+$paymentMethodcode = $block->escapeHtml($block->getMethodCode());
+$formData = [
+    'code' => $paymentMethodcode
+];
+?>
+<fieldset class="admin__fieldset payment-method"
+    id="payment_form_<?= /* @noEscape */ $paymentMethodcode; ?>"
+    style="display:none">
+    <div class="admin__field">
+        <!-- Payment logo -->
+        <?php if ($block->getPaymentLogo($paymentMethodcode)): ?>
+            <img src="<?= /* @noEscape */ $block->getPaymentLogo($paymentMethodcode); ?>"
+                alt="<?= /* @noEscape */ $block->getMethod()->getConfigData('title'); ?>"
+                title="<?= /* @noEscape */ $block->getMethod()->getConfigData('title'); ?>"
+                style="max-height:75px;" />
+        <?php endif; ?>
+        <!-- Test mode notification -->
+        <?php if ($block->getTestMode($paymentMethodcode)): ?>
+            <div class="nn-mode">
+                <div class="nn-test-drive"><?= $block->escapeHtml(__('TestMode')); ?></div>
+            </div>
+        <?php endif; ?>
+        <div class="admin__field">
+            <!-- Payment description -->
+            <p>
+                <?= $block->escapeHtml(__('You will receive an e-mail with the Novalnet account details to complete the payment')); ?><br>
+            </p>
+        </div>
+    </div>
+</fieldset>
