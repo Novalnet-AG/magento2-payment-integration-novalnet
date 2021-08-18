@@ -1,0 +1,57 @@
+<?php
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+?>
+<?php if ($block->getSectionParam() == 'payment'): ?>
+<div>
+    <input type="hidden"
+           name="nn_vendor_auto_config_url"
+           id="nn_vendor_auto_config_url"
+           value="<?= /* @noEscape */ $block->getVendorAutoConfigUrl(); ?>" />
+    <input type="hidden"
+           name="nn_tariff_id"
+           id="nn_tariff_id"
+           value="<?= /* @noEscape */ $block->getConfigValue('payment/novalnet/tariff_id'); ?>" />
+</div>
+<script type="text/javascript">
+    require([
+        "jquery",
+        "mage/translate",
+        "jquery/validate",
+        "jquery/ui"
+    ], function ($, $t) {
+        'use strict';
+
+        $.validator.addMethod('validate-novalnet-guarantee-order-total', function (v) {
+            return validateMinAmount(v, 9.99);
+        }, $.mage.__('The minimum amount should be at least 9.99 EUR'));
+
+        $.validator.addMethod('validate-novalnet-instalment-order-total', function (v) {
+            return validateMinAmount(v, 19.98);
+        }, $.mage.__('The minimum amount should be at least 19.98 EUR'));
+
+        function validateMinAmount(v, min_amount) {
+            if ((parseNumber(v) && v >= min_amount)) {
+                return true;
+            }
+            return false;
+        }
+    });
+</script>
+<?php endif;?>

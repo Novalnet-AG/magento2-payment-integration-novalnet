@@ -1,0 +1,93 @@
+<?php
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+?>
+<script type="text/javascript">
+    function displayIframeConfiguration() {
+        if (document.getElementById('iframeStyleSetting').style.display != "") {
+            document.getElementById('iframeStyleSetting').style.display = "";
+        } else {
+            document.getElementById('iframeStyleSetting').style.display = "none";
+        }
+    }
+</script>
+<style>
+    table#cc_css_setting th{
+        text-align: center;
+    }
+    table#cc_css_setting td input, table#cc_iframe_css_setting td input{
+        padding: 2px;
+        background: none repeat scroll 0 0 #fff;
+        border-color: #aaa #c8c8c8 #c8c8c8 #aaa;
+        border-style: solid;
+        border-width: 1px;
+        font: 12px arial,helvetica,sans-serif;
+        vertical-align: middle;
+    }
+    table#cc_css_setting td input{
+        width: 100px;
+    }
+    table#cc_iframe_css_setting td input{
+        width: 210px;
+    }
+    table#cc_css_setting td, table#cc_iframe_css_setting td{
+        padding-bottom: 0.5em;
+        padding-left: 0.5em;
+    }
+</style>
+
+<a href="#" onclick="displayIframeConfiguration();return false;" style="text-decoration: underline;">
+    <?= $block->escapeHtml(__('Custom CSS Settings')) ?>
+</a>
+
+<div id="iframeStyleSetting" style="display:none;padding-top:10px;">
+    <h4><?= $block->escapeHtml(__('CSS settings for iframe form')) ?></h4>
+    <table id="cc_iframe_css_setting" width="100%">
+        <tr>
+            <td><?= $block->escapeHtml(__('NN CC Label Style')) ?></td>
+            <td>
+                <?php $fieldName = 'standard_style_label' ?>
+                <input type="text"
+                       class="validate-no-html-tags"
+                       name="<?= /* @noEscape */ $block->getElement()->getName() . '[' . $fieldName . ']'; ?>"
+                       value="<?= /* @noEscape */ $block->getElementValue($fieldName); ?>"/>
+            </td>
+        </tr>
+        <tr>
+            <td><?= $block->escapeHtml(__('NN CC Input Style')) ?></td>
+            <td>
+                <?php $fieldName = 'standard_style_input' ?>
+                <input type="text"
+                       class="validate-no-html-tags"
+                       name="<?= /* @noEscape */ $block->getElement()->getName() . '[' . $fieldName . ']'; ?>"
+                       value="<?= /* @noEscape */ $block->getElementValue($fieldName); ?>"/>
+            </td>
+        </tr>
+        <tr>
+            <td><?= $block->escapeHtml(__('NN CC CSS text')) ?></td>
+            <td>
+                <?php $fieldName = 'standard_style_css' ?>
+                <input type="text"
+                       class="validate-no-html-tags"
+                       name="<?= /* @noEscape */ $block->getElement()->getName() . '[' . $fieldName . ']'; ?>"
+                       value="<?= /* @noEscape */ $block->getElementValue($fieldName); ?>"/>
+            </td>
+        </tr>
+    </table>
+</div>

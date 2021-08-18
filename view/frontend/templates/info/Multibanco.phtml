@@ -1,0 +1,49 @@
+<?php
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+
+/**
+ * @var $block \Novalnet\Payments\Block\Info\Multibanco
+ */
+$info = $block->getInfo();
+$transactionId = $block->getAdditionalData('NnTid') ? $block->getAdditionalData('NnTid') : $info->getLastTransId();
+?>
+<?php if ($info): ?>
+    <?php if ($block->getAdditionalData('NnTestMode')): ?>
+        <div style="color:white;font-weight:bold;background:red;padding:5px 10px;text-align:center;font-size:15px">
+            <?= /* @noEscape */ __('Test order') ?>
+        </div>
+    <?php endif; ?>
+    <?= $block->escapeHtml($block->getMethod()->getTitle()) ?><br>
+
+    <?php if ($transactionId): ?>
+        <?= /* @noEscape */ __('Novalnet Transaction ID: '). $transactionId ?><br><br>
+    <?php endif; ?>
+
+    <?php if ($block->getAdditionalData('NnPartnerPaymentReference') && (empty($block->getAdditionalData('NnPaid')) || $block->getAdditionalData('NnPaid') != 1)): ?>
+        <?= /* @noEscape */ __('Please use the following payment reference details to pay the amount of %1 at a Multibanco ATM or through your internet banking.', $block->getGrandTotal()) ?><br><br>
+        <?= /* @noEscape */ __('Partner Payment Reference: %1', $block->getAdditionalData('NnPartnerPaymentReference')) ?><br>
+    <?php endif; ?>
+
+    <?php if ($block->getAdditionalData('NnComments')): ?>
+        <?= /* @noEscape */ $block->getAdditionalData('NnComments') ?>
+    <?php endif; ?>
+<?php else: ?>
+    <?= /* @noEscape */ __('Error in getting payment method') ?>
+<?php endif; ?>

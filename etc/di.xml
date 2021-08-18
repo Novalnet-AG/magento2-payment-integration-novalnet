@@ -1,0 +1,1755 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Novalnet\Payment\Api\NNRepositoryInterface" type="Novalnet\Payment\Model\NNRepository" />
+    <!-- Novalnet Credit Card Facade configuration -->
+    <virtualType name="NovalnetCcFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_CC</argument>
+            <argument name="formBlockType" xsi:type="string">Novalnet\Payment\Block\Form\Cc</argument>
+            <argument name="infoBlockType" xsi:type="string">Novalnet\Payment\Block\Info\Cc</argument>
+            <argument name="valueHandlerPool" xsi:type="object">NovalnetCcValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">NovalnetCcValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">NovalnetCcCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="NovalnetCcConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_CC</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Credit Card Commands -->
+    <virtualType name="NovalnetCcCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">NovalnetCcInitializeCommand</item>
+                <item name="authorize" xsi:type="string">NovalnetCcAuthorizeCommand</item>
+                <item name="capture" xsi:type="string">NovalnetCcCaptureCommand</item>
+                <item name="refund" xsi:type="string">NovalnetRefundCommand</item>
+                <item name="void" xsi:type="string">NovalnetVoidCommand</item>
+                <item name="cancel" xsi:type="string">NovalnetVoidCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Credit Card Initialize command -->
+    <virtualType name="NovalnetCcInitializeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Novalnet\Payment\Gateway\Request\InitializeDataBuilder</argument>
+            <argument name="handler" xsi:type="object">Novalnet\Payment\Gateway\Response\CcPaymentHandler</argument>
+            <argument name="transferFactory" xsi:type="object">Novalnet\Payment\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">Novalnet\Payment\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">Novalnet\Payment\Gateway\Http\Client\TransactionInitialize</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Credit Card Initialize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\InitializeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetCcConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Credit Card Authorize command -->
+    <virtualType name="NovalnetCcAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Novalnet\Payment\Gateway\Request\AuthorizationDataBuilder</argument>
+            <argument name="handler" xsi:type="object">Novalnet\Payment\Gateway\Response\CcPaymentHandler</argument>
+            <argument name="transferFactory" xsi:type="object">Novalnet\Payment\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">Novalnet\Payment\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">Novalnet\Payment\Gateway\Http\Client\TransactionAuthorize</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Credit Card Authorize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\AuthorizationDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetCcConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Credit Card Capture command -->
+    <virtualType name="NovalnetCcCaptureCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Novalnet\Payment\Gateway\Request\CaptureDataBuilder</argument>
+            <argument name="handler" xsi:type="object">Novalnet\Payment\Gateway\Response\CcPaymentHandler</argument>
+            <argument name="transferFactory" xsi:type="object">Novalnet\Payment\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">Novalnet\Payment\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">Novalnet\Payment\Gateway\Http\Client\TransactionCapture</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Credit Card Capture Request -->
+    <type name="Novalnet\Payment\Gateway\Request\CaptureDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetCcConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Credit Card Void Request -->
+    <type name="Novalnet\Payment\Gateway\Request\VoidDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetCcConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Credit Card Refund Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RefundDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetCcConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Credit Card Value handlers -->
+    <virtualType name="NovalnetCcValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">NovalnetCcConfigValueHandler</item>
+                <item name="can_initialize" xsi:type="string">Novalnet\Payment\Gateway\Config\CanInitializeHandler</item>
+                <item name="payment_action" xsi:type="string">Novalnet\Payment\Gateway\Config\PaymentActionHandler</item>
+                <item name="order_place_redirect_url" xsi:type="string">Novalnet\Payment\Gateway\Config\OrderPlaceRedirectUrlHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetCcConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">NovalnetCcConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Credit Card Value validators -->
+    <virtualType name="NovalnetCcValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">NovalnetCcCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetCcCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetCcConfig</argument>
+        </arguments>
+    </virtualType>
+
+     <!-- Novalnet Apple Pay Facade Configuration -->
+    <virtualType name="NovalnetApplepayFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_APPLEPAY</argument>
+            <argument name="formBlockType" xsi:type="string">Novalnet\Payment\Block\Form\Applepay</argument>
+            <argument name="infoBlockType" xsi:type="string">Novalnet\Payment\Block\Info\Applepay</argument>
+            <argument name="valueHandlerPool" xsi:type="object">NovalnetApplepayValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">NovalnetApplepayValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">NovalnetApplepayCommandPool</argument>
+        </arguments>
+    </virtualType>
+    
+    <virtualType name="NovalnetApplepayConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_APPLEPAY</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Apple Pay Commands -->
+    <virtualType name="NovalnetApplepayCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">NovalnetApplepayInitializeCommand</item>
+                <item name="authorize" xsi:type="string">NovalnetApplepayAuthorizeCommand</item>
+                <item name="capture" xsi:type="string">NovalnetApplepayCaptureCommand</item>
+                <item name="refund" xsi:type="string">NovalnetRefundCommand</item>
+                <item name="void" xsi:type="string">NovalnetVoidCommand</item>
+                <item name="cancel" xsi:type="string">NovalnetVoidCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Apple Pay Initialize command -->
+    <virtualType name="NovalnetApplepayInitializeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Novalnet\Payment\Gateway\Request\InitializeDataBuilder</argument>
+            <argument name="handler" xsi:type="object">Novalnet\Payment\Gateway\Response\CcPaymentHandler</argument>
+            <argument name="transferFactory" xsi:type="object">Novalnet\Payment\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">Novalnet\Payment\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">Novalnet\Payment\Gateway\Http\Client\TransactionInitialize</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Apple Pay Initialize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\InitializeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetApplepayConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Apple Pay Authorize command -->
+    <virtualType name="NovalnetApplepayAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Novalnet\Payment\Gateway\Request\AuthorizationDataBuilder</argument>
+            <argument name="handler" xsi:type="object">Novalnet\Payment\Gateway\Response\CcPaymentHandler</argument>
+            <argument name="transferFactory" xsi:type="object">Novalnet\Payment\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">Novalnet\Payment\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">Novalnet\Payment\Gateway\Http\Client\TransactionAuthorize</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Apple Pay Authorize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\AuthorizationDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetApplepayConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Apple Pay Capture command -->
+    <virtualType name="NovalnetApplepayCaptureCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Novalnet\Payment\Gateway\Request\CaptureDataBuilder</argument>
+            <argument name="handler" xsi:type="object">Novalnet\Payment\Gateway\Response\CcPaymentHandler</argument>
+            <argument name="transferFactory" xsi:type="object">Novalnet\Payment\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">Novalnet\Payment\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">Novalnet\Payment\Gateway\Http\Client\TransactionCapture</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Apple Pay Capture Request -->
+    <type name="Novalnet\Payment\Gateway\Request\CaptureDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetApplepayConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Apple Pay Void Request -->
+    <type name="Novalnet\Payment\Gateway\Request\VoidDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetApplepayConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Apple Pay Refund Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RefundDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetApplepayConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Apple Pay Value handlers -->
+    <virtualType name="NovalnetApplepayValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">NovalnetApplepayConfigValueHandler</item>
+                <item name="can_initialize" xsi:type="string">Novalnet\Payment\Gateway\Config\CanInitializeHandler</item>
+                <item name="payment_action" xsi:type="string">Novalnet\Payment\Gateway\Config\PaymentActionHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetApplepayConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">NovalnetApplepayConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Apple Pay Value validators -->
+    <virtualType name="NovalnetApplepayValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">NovalnetApplepayCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetApplepayCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetApplepayConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Novalnet Sepa Facade configuration -->
+    <virtualType name="NovalnetSepaFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_SEPA</argument>
+            <argument name="formBlockType" xsi:type="string">Novalnet\Payment\Block\Form\Sepa</argument>
+            <argument name="infoBlockType" xsi:type="string">Novalnet\Payment\Block\Info\Sepa</argument>
+            <argument name="valueHandlerPool" xsi:type="object">NovalnetSepaValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">NovalnetSepaValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">NovalnetDirectPaymentCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="NovalnetSepaConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_SEPA</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Sepa Authorize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\AuthorizationDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetSepaConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Sepa Capture Request -->
+    <type name="Novalnet\Payment\Gateway\Request\CaptureDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetSepaConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Sepa Void Request -->
+    <type name="Novalnet\Payment\Gateway\Request\VoidDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetSepaConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Sepa Refund Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RefundDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetSepaConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Sepa Value handlers -->
+    <virtualType name="NovalnetSepaValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">NovalnetSepaConfigValueHandler</item>
+                <item name="payment_action" xsi:type="string">Novalnet\Payment\Gateway\Config\PaymentActionHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetSepaConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">NovalnetSepaConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Sepa Value validators -->
+    <virtualType name="NovalnetSepaValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">NovalnetSepaCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetSepaCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetSepaConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Novalnet Invoice Facade configuration -->
+    <virtualType name="NovalnetInvoiceFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_INVOICE</argument>
+            <argument name="formBlockType" xsi:type="string">Novalnet\Payment\Block\Form\Invoice</argument>
+            <argument name="infoBlockType" xsi:type="string">Novalnet\Payment\Block\Info\Invoice</argument>
+            <argument name="valueHandlerPool" xsi:type="object">NovalnetInvoiceValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">NovalnetInvoiceValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">NovalnetDirectPaymentCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="NovalnetInvoiceConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_INVOICE</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Invoice Authorize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\AuthorizationDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetInvoiceConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Invoice Capture Request -->
+    <type name="Novalnet\Payment\Gateway\Request\CaptureDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetInvoiceConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Invoice Void Request -->
+    <type name="Novalnet\Payment\Gateway\Request\VoidDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetInvoiceConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Invoice Refund Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RefundDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetInvoiceConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Invoice Value handlers -->
+    <virtualType name="NovalnetInvoiceValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">NovalnetInvoiceConfigValueHandler</item>
+                <item name="payment_action" xsi:type="string">Novalnet\Payment\Gateway\Config\PaymentActionHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetInvoiceConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">NovalnetInvoiceConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Invoice Value validators -->
+    <virtualType name="NovalnetInvoiceValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">NovalnetInvoiceCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetInvoiceCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetInvoiceConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Novalnet Invoice Guarantee Facade configuration -->
+    <virtualType name="NovalnetInvoiceGuaranteeFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_INVOICE_GUARANTEE</argument>
+            <argument name="formBlockType" xsi:type="string">Novalnet\Payment\Block\Form\InvoiceGuarantee</argument>
+            <argument name="infoBlockType" xsi:type="string">Novalnet\Payment\Block\Info\InvoiceGuarantee</argument>
+            <argument name="valueHandlerPool" xsi:type="object">NovalnetInvoiceGuaranteeValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">NovalnetInvoiceGuaranteeValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">NovalnetInvoiceGuaranteeCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="NovalnetInvoiceGuaranteeConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_INVOICE_GUARANTEE</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Direct Payment CommandPool -->
+    <virtualType name="NovalnetInvoiceGuaranteeCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">NovalnetInitializeCommand</item>
+                <item name="authorize" xsi:type="string">NovalnetDirectPaymentAuthorizeCommand</item>
+                <item name="capture" xsi:type="string">NovalnetCaptureCommand</item>
+                <item name="refund" xsi:type="string">NovalnetRefundCommand</item>
+                <item name="void" xsi:type="string">NovalnetVoidCommand</item>
+                <item name="cancel" xsi:type="string">NovalnetVoidCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Invoice Guarantee Initialize command -->
+    <virtualType name="NovalnetInvoiceGuaranteeInitializeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Novalnet\Payment\Gateway\Request\InitializeDataBuilder</argument>
+            <argument name="handler" xsi:type="object">Novalnet\Payment\Gateway\Response\CcPaymentHandler</argument>
+            <argument name="transferFactory" xsi:type="object">Novalnet\Payment\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">Novalnet\Payment\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">Novalnet\Payment\Gateway\Http\Client\TransactionInitialize</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Invoice Guarantee Initialize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\InitializeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetInvoiceGuaranteeConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Invoice Guarantee Authorize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\AuthorizationDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetInvoiceGuaranteeConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Invoice Guarantee Capture Request -->
+    <type name="Novalnet\Payment\Gateway\Request\CaptureDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetInvoiceGuaranteeConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Invoice Guarantee Void Request -->
+    <type name="Novalnet\Payment\Gateway\Request\VoidDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetInvoiceGuaranteeConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Invoice Guarantee Refund Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RefundDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetInvoiceGuaranteeConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Invoice Guarantee Value handlers -->
+    <virtualType name="NovalnetInvoiceGuaranteeValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">NovalnetInvoiceGuaranteeConfigValueHandler</item>
+                <item name="payment_action" xsi:type="string">Novalnet\Payment\Gateway\Config\PaymentActionHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetInvoiceGuaranteeConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">NovalnetInvoiceGuaranteeConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Invoice Guarantee Value validators -->
+    <virtualType name="NovalnetInvoiceGuaranteeValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">NovalnetInvoiceGuaranteeCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetInvoiceGuaranteeCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetInvoiceGuaranteeConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Novalnet Sepa Guarantee Facade configuration -->
+    <virtualType name="NovalnetSepaGuaranteeFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_SEPA_GUARANTEE</argument>
+            <argument name="formBlockType" xsi:type="string">Novalnet\Payment\Block\Form\SepaGuarantee</argument>
+            <argument name="infoBlockType" xsi:type="string">Novalnet\Payment\Block\Info\SepaGuarantee</argument>
+            <argument name="valueHandlerPool" xsi:type="object">NovalnetSepaGuaranteeValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">NovalnetSepaGuaranteeValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">NovalnetSepaGuaranteeCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="NovalnetSepaGuaranteeConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_SEPA_GUARANTEE</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Direct Payment CommandPool -->
+    <virtualType name="NovalnetSepaGuaranteeCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">NovalnetInitializeCommand</item>
+                <item name="authorize" xsi:type="string">NovalnetDirectPaymentAuthorizeCommand</item>
+                <item name="capture" xsi:type="string">NovalnetCaptureCommand</item>
+                <item name="refund" xsi:type="string">NovalnetRefundCommand</item>
+                <item name="void" xsi:type="string">NovalnetVoidCommand</item>
+                <item name="cancel" xsi:type="string">NovalnetVoidCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Sepa Guarantee Initialize command -->
+    <virtualType name="NovalnetSepaGuaranteeInitializeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Novalnet\Payment\Gateway\Request\InitializeDataBuilder</argument>
+            <argument name="handler" xsi:type="object">Novalnet\Payment\Gateway\Response\CcPaymentHandler</argument>
+            <argument name="transferFactory" xsi:type="object">Novalnet\Payment\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">Novalnet\Payment\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">Novalnet\Payment\Gateway\Http\Client\TransactionInitialize</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Sepa Guarantee Initialize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\InitializeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetSepaGuaranteeConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Sepa Guarantee Authorize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\AuthorizationDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetSepaGuaranteeConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Sepa Guarantee Capture Request -->
+    <type name="Novalnet\Payment\Gateway\Request\CaptureDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetSepaGuaranteeConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Sepa Guarantee Void Request -->
+    <type name="Novalnet\Payment\Gateway\Request\VoidDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetSepaGuaranteeConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Sepa Guarantee Refund Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RefundDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetSepaGuaranteeConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Sepa Guarantee Value handlers -->
+    <virtualType name="NovalnetSepaGuaranteeValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">NovalnetSepaGuaranteeConfigValueHandler</item>
+                <item name="payment_action" xsi:type="string">Novalnet\Payment\Gateway\Config\PaymentActionHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetSepaGuaranteeConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">NovalnetSepaGuaranteeConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Sepa Guarantee Value validators -->
+    <virtualType name="NovalnetSepaGuaranteeValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">NovalnetSepaGuaranteeCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetSepaGuaranteeCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetSepaGuaranteeConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Novalnet Prepayment Facade configuration -->
+    <virtualType name="NovalnetPrepaymentFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_PREPAYMENT</argument>
+            <argument name="formBlockType" xsi:type="string">Novalnet\Payment\Block\Form\Prepayment</argument>
+            <argument name="infoBlockType" xsi:type="string">Novalnet\Payment\Block\Info\Prepayment</argument>
+            <argument name="valueHandlerPool" xsi:type="object">NovalnetPrepaymentValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">NovalnetPrepaymentValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">NovalnetDirectPaymentCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="NovalnetPrepaymentConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_PREPAYMENT</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Prepayment Authorize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\AuthorizationDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPrepaymentConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Prepayment Capture Request -->
+    <type name="Novalnet\Payment\Gateway\Request\CaptureDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPrepaymentConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Prepayment Void Request -->
+    <type name="Novalnet\Payment\Gateway\Request\VoidDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPrepaymentConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Prepayment Refund Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RefundDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPrepaymentConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Prepayment Value handlers -->
+    <virtualType name="NovalnetPrepaymentValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">NovalnetPrepaymentConfigValueHandler</item>
+                <item name="payment_action" xsi:type="string">Novalnet\Payment\Gateway\Config\PaymentActionHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetPrepaymentConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">NovalnetPrepaymentConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Prepayment Value validators -->
+    <virtualType name="NovalnetPrepaymentValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">NovalnetPrepaymentCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetPrepaymentCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPrepaymentConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Novalnet Cashpayment Facade configuration -->
+    <virtualType name="NovalnetCashpaymentFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_CASHPAYMENT</argument>
+            <argument name="formBlockType" xsi:type="string">Novalnet\Payment\Block\Form\Cashpayment</argument>
+            <argument name="infoBlockType" xsi:type="string">Novalnet\Payment\Block\Info\Cashpayment</argument>
+            <argument name="valueHandlerPool" xsi:type="object">NovalnetCashpaymentValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">NovalnetCashpaymentValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">NovalnetDirectPaymentCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="NovalnetCashpaymentConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_CASHPAYMENT</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Cashpayment Authorize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\AuthorizationDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetCashpaymentConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Cashpayment Capture Request -->
+    <type name="Novalnet\Payment\Gateway\Request\CaptureDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetCashpaymentConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Cashpayment Void Request -->
+    <type name="Novalnet\Payment\Gateway\Request\VoidDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetCashpaymentConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Cashpayment Refund Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RefundDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetCashpaymentConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Cashpayment Value handlers -->
+    <virtualType name="NovalnetCashpaymentValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">NovalnetCashpaymentConfigValueHandler</item>
+                <item name="payment_action" xsi:type="string">Novalnet\Payment\Gateway\Config\PaymentActionHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetCashpaymentConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">NovalnetCashpaymentConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Cashpayment Value validators -->
+    <virtualType name="NovalnetCashpaymentValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">NovalnetCashpaymentCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetCashpaymentCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetCashpaymentConfig</argument>
+        </arguments>
+    </virtualType>
+    
+    <!-- Novalnet Multibanco Facade configuration -->
+    <virtualType name="NovalnetMultibancoFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_MULTIBANCO</argument>
+            <argument name="formBlockType" xsi:type="string">Novalnet\Payment\Block\Form\Multibanco</argument>
+            <argument name="infoBlockType" xsi:type="string">Novalnet\Payment\Block\Info\Multibanco</argument>
+            <argument name="valueHandlerPool" xsi:type="object">NovalnetMultibancoValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">NovalnetMultibancoValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">NovalnetDirectPaymentCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="NovalnetMultibancoConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_MULTIBANCO</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Multibanco Authorize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\AuthorizationDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetMultibancoConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Multibanco Value handlers -->
+    <virtualType name="NovalnetMultibancoValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">NovalnetMultibancoConfigValueHandler</item>
+                <item name="payment_action" xsi:type="string">Novalnet\Payment\Gateway\Config\PaymentActionHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetMultibancoConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">NovalnetMultibancoConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Multibanco Value validators -->
+    <virtualType name="NovalnetMultibancoValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">NovalnetMultibancoCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetMultibancoCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetMultibancoConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Novalnet Paypal Facade configuration -->
+    <virtualType name="NovalnetPaypalFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_PAYPAL</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Novalnet\Payment\Block\Info\Paypal</argument>
+            <argument name="valueHandlerPool" xsi:type="object">NovalnetPaypalValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">NovalnetPaypalValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">NovalnetRedirectPaymentCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="NovalnetPaypalConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_PAYPAL</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Paypal Initialize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\InitializeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPaypalConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Paypal Authorize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RedirectAuthorizeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPaypalConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Paypal Capture Request -->
+    <type name="Novalnet\Payment\Gateway\Request\CaptureDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPaypalConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Paypal Void Request -->
+    <type name="Novalnet\Payment\Gateway\Request\VoidDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPaypalConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Paypal Refund Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RefundDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPaypalConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Paypal Value handlers -->
+    <virtualType name="NovalnetPaypalValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">NovalnetPaypalConfigValueHandler</item>
+                <item name="payment_action" xsi:type="string">Novalnet\Payment\Gateway\Config\PaymentActionHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetPaypalConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">NovalnetPaypalConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Paypal Value validators -->
+    <virtualType name="NovalnetPaypalValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">NovalnetPaypalCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetPaypalCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPaypalConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Novalnet Banktransfer Facade configuration -->
+    <virtualType name="NovalnetBanktransferFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_BANKTRANSFER</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Novalnet\Payment\Block\Info\Banktransfer</argument>
+            <argument name="valueHandlerPool" xsi:type="object">NovalnetBanktransferValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">NovalnetBanktransferValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">NovalnetRedirectPaymentCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="NovalnetBanktransferConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_BANKTRANSFER</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Banktransfer Initialize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\InitializeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetBanktransferConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Banktransfer Authorize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RedirectAuthorizeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetBanktransferConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Banktransfer Capture Request -->
+    <type name="Novalnet\Payment\Gateway\Request\CaptureDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetBanktransferConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Banktransfer Void Request -->
+    <type name="Novalnet\Payment\Gateway\Request\VoidDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetBanktransferConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Banktransfer Refund Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RefundDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetBanktransferConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Banktransfer Value handlers -->
+    <virtualType name="NovalnetBanktransferValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">NovalnetBanktransferConfigValueHandler</item>
+                <item name="payment_action" xsi:type="string">Novalnet\Payment\Gateway\Config\PaymentActionHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetBanktransferConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">NovalnetBanktransferConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Banktransfer Value validators -->
+    <virtualType name="NovalnetBanktransferValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">NovalnetBanktransferCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetBanktransferCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetBanktransferConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Novalnet Ideal Facade configuration -->
+    <virtualType name="NovalnetIdealFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_IDEAL</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Novalnet\Payment\Block\Info\Ideal</argument>
+            <argument name="valueHandlerPool" xsi:type="object">NovalnetIdealValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">NovalnetIdealValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">NovalnetRedirectPaymentCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="NovalnetIdealConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_IDEAL</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Ideal Initialize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\InitializeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetIdealConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Ideal Authorize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RedirectAuthorizeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetIdealConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Ideal Capture Request -->
+    <type name="Novalnet\Payment\Gateway\Request\CaptureDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetIdealConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Ideal Void Request -->
+    <type name="Novalnet\Payment\Gateway\Request\VoidDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetIdealConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Ideal Refund Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RefundDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetIdealConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Ideal Value handlers -->
+    <virtualType name="NovalnetIdealValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">NovalnetIdealConfigValueHandler</item>
+                <item name="payment_action" xsi:type="string">Novalnet\Payment\Gateway\Config\PaymentActionHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetIdealConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">NovalnetIdealConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Ideal Value validators -->
+    <virtualType name="NovalnetIdealValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">NovalnetIdealCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetIdealCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetIdealConfig</argument>
+        </arguments>
+    </virtualType>
+
+     <!-- Novalnet Bancontact Facade configuration -->
+    <virtualType name="NovalnetBancontactFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_BANCONTACT</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Novalnet\Payment\Block\Info\Bancontact</argument>
+            <argument name="valueHandlerPool" xsi:type="object">NovalnetBancontactValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">NovalnetBancontactValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">NovalnetRedirectPaymentCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="NovalnetBancontactConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_BANCONTACT</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Bancontact Initialize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\InitializeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetBancontactConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Bancontact Authorize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RedirectAuthorizeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetBancontactConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Bancontact Capture Request -->
+    <type name="Novalnet\Payment\Gateway\Request\CaptureDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetBancontactConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Bancontact Void Request -->
+    <type name="Novalnet\Payment\Gateway\Request\VoidDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetBancontactConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Bancontact Refund Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RefundDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetBancontactConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Bancontact Value handlers -->
+    <virtualType name="NovalnetBancontactValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">NovalnetBancontactConfigValueHandler</item>
+                <item name="payment_action" xsi:type="string">Novalnet\Payment\Gateway\Config\PaymentActionHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetBancontactConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">NovalnetBancontactConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Bancontact Value validators -->
+    <virtualType name="NovalnetBancontactValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">NovalnetBancontactCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetBancontactCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetBancontactConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Novalnet Eps Facade configuration -->
+    <virtualType name="NovalnetEpsFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_EPS</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Novalnet\Payment\Block\Info\Eps</argument>
+            <argument name="valueHandlerPool" xsi:type="object">NovalnetEpsValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">NovalnetEpsValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">NovalnetRedirectPaymentCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="NovalnetEpsConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_EPS</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Eps Initialize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\InitializeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetEpsConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Eps Authorize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RedirectAuthorizeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetEpsConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Eps Capture Request -->
+    <type name="Novalnet\Payment\Gateway\Request\CaptureDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetEpsConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Eps Void Request -->
+    <type name="Novalnet\Payment\Gateway\Request\VoidDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetEpsConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Eps Refund Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RefundDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetEpsConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Eps Value handlers -->
+    <virtualType name="NovalnetEpsValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">NovalnetEpsConfigValueHandler</item>
+                <item name="payment_action" xsi:type="string">Novalnet\Payment\Gateway\Config\PaymentActionHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetEpsConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">NovalnetEpsConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Eps Value validators -->
+    <virtualType name="NovalnetEpsValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">NovalnetEpsCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetEpsCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetEpsConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Novalnet Giropay Facade configuration -->
+    <virtualType name="NovalnetGiropayFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_GIROPAY</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Novalnet\Payment\Block\Info\Giropay</argument>
+            <argument name="valueHandlerPool" xsi:type="object">NovalnetGiropayValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">NovalnetGiropayValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">NovalnetRedirectPaymentCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="NovalnetGiropayConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_GIROPAY</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Giropay Initialize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\InitializeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetGiropayConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Giropay Authorize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RedirectAuthorizeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetGiropayConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Giropay Capture Request -->
+    <type name="Novalnet\Payment\Gateway\Request\CaptureDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetGiropayConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Giropay Void Request -->
+    <type name="Novalnet\Payment\Gateway\Request\VoidDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetGiropayConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Giropay Refund Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RefundDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetGiropayConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Giropay Value handlers -->
+    <virtualType name="NovalnetGiropayValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">NovalnetGiropayConfigValueHandler</item>
+                <item name="payment_action" xsi:type="string">Novalnet\Payment\Gateway\Config\PaymentActionHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetGiropayConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">NovalnetGiropayConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Giropay Value validators -->
+    <virtualType name="NovalnetGiropayValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">NovalnetGiropayCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetGiropayCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetGiropayConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Novalnet Przelewy Facade configuration -->
+    <virtualType name="NovalnetPrzelewyFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_PRZELEWY</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Novalnet\Payment\Block\Info\Przelewy</argument>
+            <argument name="valueHandlerPool" xsi:type="object">NovalnetPrzelewyValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">NovalnetPrzelewyValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">NovalnetRedirectPaymentCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="NovalnetPrzelewyConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_PRZELEWY</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Przelewy Initialize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\InitializeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPrzelewyConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Przelewy Authorize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RedirectAuthorizeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPrzelewyConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Przelewy Capture Request -->
+    <type name="Novalnet\Payment\Gateway\Request\CaptureDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPrzelewyConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Przelewy Void Request -->
+    <type name="Novalnet\Payment\Gateway\Request\VoidDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPrzelewyConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Przelewy Refund Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RefundDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPrzelewyConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet Przelewy Value handlers -->
+    <virtualType name="NovalnetPrzelewyValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">NovalnetPrzelewyConfigValueHandler</item>
+                <item name="payment_action" xsi:type="string">Novalnet\Payment\Gateway\Config\PaymentActionHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetPrzelewyConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">NovalnetPrzelewyConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Przelewy Value validators -->
+    <virtualType name="NovalnetPrzelewyValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">NovalnetPrzelewyCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetPrzelewyCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPrzelewyConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Novalnet PostFinance Facade configuration -->
+    <virtualType name="NovalnetPostFinanceFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_POSTFINANCE</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Novalnet\Payment\Block\Info\PostFinance</argument>
+            <argument name="valueHandlerPool" xsi:type="object">NovalnetPostFinanceValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">NovalnetPostFinanceValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">NovalnetRedirectPaymentCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="NovalnetPostFinanceConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_POSTFINANCE</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet PostFinance Initialize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\InitializeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPostFinanceConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet PostFinance Authorize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RedirectAuthorizeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPostFinanceConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet PostFinance Capture Request -->
+    <type name="Novalnet\Payment\Gateway\Request\CaptureDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPostFinanceConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet PostFinance Void Request -->
+    <type name="Novalnet\Payment\Gateway\Request\VoidDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPostFinanceConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet PostFinance Refund Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RefundDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPostFinanceConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet PostFinance Value handlers -->
+    <virtualType name="NovalnetPostFinanceValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">NovalnetPostFinanceConfigValueHandler</item>
+                <item name="payment_action" xsi:type="string">Novalnet\Payment\Gateway\Config\PaymentActionHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetPostFinanceConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">NovalnetPostFinanceConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet PostFinance Value validators -->
+    <virtualType name="NovalnetPostFinanceValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">NovalnetPostFinanceCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetPostFinanceCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPostFinanceConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Novalnet PostFinanceCard Facade configuration -->
+    <virtualType name="NovalnetPostFinanceCardFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_POSTFINANCE_CARD</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Novalnet\Payment\Block\Info\PostFinanceCard</argument>
+            <argument name="valueHandlerPool" xsi:type="object">NovalnetPostFinanceCardValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">NovalnetPostFinanceCardValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">NovalnetRedirectPaymentCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="NovalnetPostFinanceCardConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_POSTFINANCE_CARD</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet PostFinanceCard Initialize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\InitializeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPostFinanceCardConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet PostFinanceCard Authorize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RedirectAuthorizeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPostFinanceCardConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet PostFinanceCard Capture Request -->
+    <type name="Novalnet\Payment\Gateway\Request\CaptureDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPostFinanceCardConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet PostFinanceCard Void Request -->
+    <type name="Novalnet\Payment\Gateway\Request\VoidDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPostFinanceCardConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet PostFinanceCard Refund Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RefundDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPostFinanceCardConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet PostFinanceCard Value handlers -->
+    <virtualType name="NovalnetPostFinanceCardValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">NovalnetPostFinanceCardConfigValueHandler</item>
+                <item name="payment_action" xsi:type="string">Novalnet\Payment\Gateway\Config\PaymentActionHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetPostFinanceCardConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">NovalnetPostFinanceCardConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet PostFinanceCard Value validators -->
+    <virtualType name="NovalnetPostFinanceCardValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">NovalnetPostFinanceCardCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetPostFinanceCardCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetPostFinanceCardConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Novalnet SepaInstalment Facade configuration -->
+    <virtualType name="NovalnetSepaInstalmentFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_SEPA_INSTALMENT</argument>
+            <argument name="formBlockType" xsi:type="string">Novalnet\Payment\Block\Form\SepaInstalment</argument>
+            <argument name="infoBlockType" xsi:type="string">Novalnet\Payment\Block\Info\SepaInstalment</argument>
+            <argument name="valueHandlerPool" xsi:type="object">NovalnetSepaInstalmentValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">NovalnetSepaInstalmentValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">NovalnetSepaInstalmentCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="NovalnetSepaInstalmentConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_SEPA_INSTALMENT</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Direct Payment CommandPool -->
+    <virtualType name="NovalnetSepaInstalmentCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">NovalnetInitializeCommand</item>
+                <item name="authorize" xsi:type="string">NovalnetDirectPaymentAuthorizeCommand</item>
+                <item name="capture" xsi:type="string">NovalnetCaptureCommand</item>
+                <item name="refund" xsi:type="string">NovalnetRefundCommand</item>
+                <item name="void" xsi:type="string">NovalnetVoidCommand</item>
+                <item name="cancel" xsi:type="string">NovalnetVoidCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet SepaInstalment Initialize command -->
+    <virtualType name="NovalnetSepaInstalmentInitializeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Novalnet\Payment\Gateway\Request\InitializeDataBuilder</argument>
+            <argument name="handler" xsi:type="object">Novalnet\Payment\Gateway\Response\CcPaymentHandler</argument>
+            <argument name="transferFactory" xsi:type="object">Novalnet\Payment\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">Novalnet\Payment\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">Novalnet\Payment\Gateway\Http\Client\TransactionInitialize</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet SepaInstalment Initialize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\InitializeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetSepaInstalmentConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet SepaInstalment Authorize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\AuthorizationDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetSepaInstalmentConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet SepaInstalment Capture Request -->
+    <type name="Novalnet\Payment\Gateway\Request\CaptureDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetSepaInstalmentConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet SepaInstalment Void Request -->
+    <type name="Novalnet\Payment\Gateway\Request\VoidDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetSepaInstalmentConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet SepaInstalment Refund Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RefundDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetSepaInstalmentConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet SepaInstalment Value handlers -->
+    <virtualType name="NovalnetSepaInstalmentValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">NovalnetSepaInstalmentConfigValueHandler</item>
+                <item name="payment_action" xsi:type="string">Novalnet\Payment\Gateway\Config\PaymentActionHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetSepaInstalmentConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">NovalnetSepaInstalmentConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet SepaInstalment Value validators -->
+    <virtualType name="NovalnetSepaInstalmentValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">NovalnetSepaInstalmentCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetSepaInstalmentCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetSepaInstalmentConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet InvoiceInstalment Facade configuration -->
+    <virtualType name="NovalnetInvoiceInstalmentFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_INVOICE_INSTALMENT</argument>
+            <argument name="formBlockType" xsi:type="string">Novalnet\Payment\Block\Form\InvoiceInstalment</argument>
+            <argument name="infoBlockType" xsi:type="string">Novalnet\Payment\Block\Info\InvoiceInstalment</argument>
+            <argument name="valueHandlerPool" xsi:type="object">NovalnetInvoiceInstalmentValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">NovalnetInvoiceInstalmentValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">NovalnetInvoiceInstalmentCommandPool</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetInvoiceInstalmentConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\Novalnet\Payment\Model\Ui\ConfigProvider::NOVALNET_INVOICE_INSTALMENT</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Direct Payment CommandPool -->
+    <virtualType name="NovalnetInvoiceInstalmentCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">NovalnetInitializeCommand</item>
+                <item name="authorize" xsi:type="string">NovalnetDirectPaymentAuthorizeCommand</item>
+                <item name="capture" xsi:type="string">NovalnetCaptureCommand</item>
+                <item name="refund" xsi:type="string">NovalnetRefundCommand</item>
+                <item name="void" xsi:type="string">NovalnetVoidCommand</item>
+                <item name="cancel" xsi:type="string">NovalnetVoidCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet InvoiceInstalment Initialize command -->
+    <virtualType name="NovalnetInvoiceInstalmentInitializeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Novalnet\Payment\Gateway\Request\InitializeDataBuilder</argument>
+            <argument name="handler" xsi:type="object">Novalnet\Payment\Gateway\Response\CcPaymentHandler</argument>
+            <argument name="transferFactory" xsi:type="object">Novalnet\Payment\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">Novalnet\Payment\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">Novalnet\Payment\Gateway\Http\Client\TransactionInitialize</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet InvoiceInstalment Initialize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\InitializeDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetInvoiceInstalmentConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet InvoiceInstalment Authorize Request -->
+    <type name="Novalnet\Payment\Gateway\Request\AuthorizationDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetInvoiceInstalmentConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet InvoiceInstalment Capture Request -->
+    <type name="Novalnet\Payment\Gateway\Request\CaptureDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetInvoiceInstalmentConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet InvoiceInstalment Void Request -->
+    <type name="Novalnet\Payment\Gateway\Request\VoidDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetInvoiceInstalmentConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet InvoiceInstalment Refund Request -->
+    <type name="Novalnet\Payment\Gateway\Request\RefundDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetInvoiceInstalmentConfig</argument>
+        </arguments>
+    </type>
+    <!-- Novalnet InvoiceInstalment Value handlers -->
+    <virtualType name="NovalnetInvoiceInstalmentValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">NovalnetInvoiceInstalmentConfigValueHandler</item>
+                <item name="payment_action" xsi:type="string">Novalnet\Payment\Gateway\Config\PaymentActionHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetInvoiceInstalmentConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">NovalnetInvoiceInstalmentConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet InvoiceInstalment Value validators -->
+    <virtualType name="NovalnetInvoiceInstalmentValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">NovalnetInvoiceInstalmentCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NovalnetInvoiceInstalmentCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">NovalnetInvoiceInstalmentConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Novalnet Direct Payment CommandPool -->
+    <virtualType name="NovalnetDirectPaymentCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="authorize" xsi:type="string">NovalnetDirectPaymentAuthorizeCommand</item>
+                <item name="capture" xsi:type="string">NovalnetCaptureCommand</item>
+                <item name="refund" xsi:type="string">NovalnetRefundCommand</item>
+                <item name="void" xsi:type="string">NovalnetVoidCommand</item>
+                <item name="cancel" xsi:type="string">NovalnetVoidCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Redirect Payment CommandPool -->
+    <virtualType name="NovalnetRedirectPaymentCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">NovalnetInitializeCommand</item>
+                <item name="authorize" xsi:type="string">NovalnetRedirectPaymentAuthorizeCommand</item>
+                <item name="capture" xsi:type="string">NovalnetCaptureCommand</item>
+                <item name="refund" xsi:type="string">NovalnetRefundCommand</item>
+                <item name="void" xsi:type="string">NovalnetVoidCommand</item>
+                <item name="cancel" xsi:type="string">NovalnetVoidCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Initialize command -->
+    <virtualType name="NovalnetInitializeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Novalnet\Payment\Gateway\Request\InitializeDataBuilder</argument>
+            <argument name="handler" xsi:type="object">Novalnet\Payment\Gateway\Response\PaymentHandler</argument>
+            <argument name="transferFactory" xsi:type="object">Novalnet\Payment\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">Novalnet\Payment\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">Novalnet\Payment\Gateway\Http\Client\TransactionInitialize</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Direct Payment Authorize command -->
+    <virtualType name="NovalnetDirectPaymentAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Novalnet\Payment\Gateway\Request\AuthorizationDataBuilder</argument>
+            <argument name="handler" xsi:type="object">Novalnet\Payment\Gateway\Response\PaymentHandler</argument>
+            <argument name="transferFactory" xsi:type="object">Novalnet\Payment\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">Novalnet\Payment\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">Novalnet\Payment\Gateway\Http\Client\TransactionAuthorize</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Redirect Payment Authorize command -->
+    <virtualType name="NovalnetRedirectPaymentAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Novalnet\Payment\Gateway\Request\RedirectAuthorizeDataBuilder</argument>
+            <argument name="handler" xsi:type="object">Novalnet\Payment\Gateway\Response\RedirectAuthorizeHandler</argument>
+            <argument name="transferFactory" xsi:type="object">Novalnet\Payment\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">Novalnet\Payment\Gateway\Http\Client\TransactionRedirect</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Capture command -->
+    <virtualType name="NovalnetCaptureCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Novalnet\Payment\Gateway\Request\CaptureDataBuilder</argument>
+            <argument name="handler" xsi:type="object">Novalnet\Payment\Gateway\Response\PaymentHandler</argument>
+            <argument name="transferFactory" xsi:type="object">Novalnet\Payment\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">Novalnet\Payment\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">Novalnet\Payment\Gateway\Http\Client\TransactionCapture</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Void command -->
+    <virtualType name="NovalnetVoidCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Novalnet\Payment\Gateway\Request\VoidDataBuilder</argument>
+            <argument name="handler" xsi:type="object">Novalnet\Payment\Gateway\Response\VoidHandler</argument>
+            <argument name="transferFactory" xsi:type="object">Novalnet\Payment\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">Novalnet\Payment\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">Novalnet\Payment\Gateway\Http\Client\TransactionVoid</argument>
+        </arguments>
+    </virtualType>
+    <!-- Novalnet Refund command -->
+    <virtualType name="NovalnetRefundCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Novalnet\Payment\Gateway\Request\RefundDataBuilder</argument>
+            <argument name="handler" xsi:type="object">Novalnet\Payment\Gateway\Response\RefundHandler</argument>
+            <argument name="transferFactory" xsi:type="object">Novalnet\Payment\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">Novalnet\Payment\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">Novalnet\Payment\Gateway\Http\Client\TransactionRefund</argument>
+        </arguments>
+    </virtualType>
+    <!--Novalnet logger -->
+    <type name="Novalnet\Payment\Logger\Handler\NovalnetInfo">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
+    <type name="Novalnet\Payment\Logger\NovalnetLogger">
+        <arguments>
+            <argument name="name" xsi:type="string">NovalnetLogger</argument>
+            <argument name="handlers"  xsi:type="array">
+                <item name="novalnetNotice" xsi:type="object">Novalnet\Payment\Logger\Handler\NovalnetNotice</item>
+                <item name="novalnetDebug" xsi:type="object">Novalnet\Payment\Logger\Handler\NovalnetDebug</item>
+                <item name="novalnetError" xsi:type="object">Novalnet\Payment\Logger\Handler\NovalnetError</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

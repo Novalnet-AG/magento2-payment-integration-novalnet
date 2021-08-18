@@ -1,0 +1,167 @@
+<!--
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+-->
+<div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}" style="display:none">
+    <div class="payment-method-title field choice">
+        <input type="radio"
+               name="payment[method]"
+               class="radio"
+               data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
+        <label data-bind="attr: {'for': getCode()}" class="label"><span data-bind="text: getTitle()"></span></label>
+    </div>
+
+    <div class="payment-method-content">
+        <!-- ko foreach: getRegion('messages') -->
+        <!-- ko template: getTemplate() --><!-- /ko -->
+        <!--/ko-->
+
+        <div data-bind="if: getLogo()">
+            <span>
+                <img class="nnpayment-logo" data-bind="attr: {src: getLogo(), alt: getTitle(), title: getTitle()}"/>
+            </span>
+        </div>
+
+        <div class="payment-method-billing-address">
+            <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+
+        <div class="nn-mode" data-bind="if: getTestmode()">
+            <div class="nn-test-drive"><!-- ko i18n: 'TestMode'--><!-- /ko --></div>
+        </div>
+
+        <form class="form" method="post" data-bind="attr: {id: getCode()}" data-role="novalnetSepa">
+            <div data-bind="attr: {id: getCode() + '_saved_payments'}, foreach: {data: getStoredPayments(), as: 'storedPayment'}">
+                <div class="novalnet-payment-saved-payments" data-bind="attr: {title: $data.key}">
+                    <input type="radio" name="payment[saved_payment]" class=""
+                        data-bind="checked: $parent.novalnetPaymentToken,
+                            value: storedPayment.NnToken,
+                            attr: {id: ('nn_token_' + storedPayment.id)}">
+                    <label data-bind="attr: {for: ('nn_token_' + storedPayment.id)}">
+                        <span><!-- ko i18n: 'IBAN'--><!-- /ko --></span>&nbsp;<span data-bind="text: storedPayment.token_info.NnIban"></span>
+                    </label>
+                    <a href="#" data-bind="click: function() {
+                            $parent.removeToken(storedPayment.id);
+                        },
+                        attr: {class: 'nntoken action delete', 'nntoken-id': storedPayment.id},
+                        title: $t('Remove Novalnet Token')">
+                        <span data-bind="i18n: 'Remove'"></span>
+                    </a>
+                </div>
+            </div>
+
+            <div data-bind="if: getStoredPayments().length">
+                <div class="novalnet-payment-new_account">
+                    <input type="radio" name="payment[saved_payment]" value="new_account" class=""
+                        data-bind="checked: novalnetPaymentToken, attr: {id: getCode() + '_new_account'}">
+                    <label data-bind="attr: {for: getCode() + '_new_account'}">
+                        <span><!-- ko i18n: 'Add new account details'--><!-- /ko --></span>
+                    </label>
+                </div>
+            </div>
+            <br>
+
+            <fieldset data-bind="attr: {class: 'fieldset payment items ccard ' + getCode(), id: 'novalnet_form_sepa'}">
+                    <div class="field number required">
+                        <label data-bind="attr: {for: getCode() + '_account_number'}" class="label">
+                            <span><!-- ko i18n: 'IBAN'--><!-- /ko --></span>
+                        </label>
+                        <div class="control">
+                            <input type="text" name="payment[_account_number]" class="input-text" value=""
+                                   data-validate="{required:true}"
+                                   data-bind="attr: {
+                                    autocomplete: off,
+                                    id: getCode() + '_account_number',
+                                    title: $t('IBAN'),
+                                    placeholder: 'DE00 0000 0000 0000 0000 00',
+                                    'data-container': getCode() + '-account-number'},
+                                    value: sepaAccountNumber"
+                                    style="text-transform:uppercase;"
+                                    onkeypress = "return NovalnetUtility.formatIban(event)"
+                                    onchange = "return NovalnetUtility.formatIban(event)" />
+                        </div>
+                    </div>
+                    <div class="field" data-bind="attr: {id: getCode() + '_store_payment_div'},
+                        if: showStorePayment(),
+                        visible: showStorePayment()">
+                        <div class="control">
+                            <input type="checkbox"
+                                name="payment[_store_payment]"
+                                data-bind="attr: {id: getCode() + '_store_payment'}" checked />
+                            <label data-bind="attr: {for: getCode() + '_store_payment'}" class="label">
+                                <span><!-- ko i18n: 'Save for future purchase'--><!-- /ko --></span>
+                            </label>
+                        </div>
+                    </div>
+            </fieldset>
+        </form>
+        <div class="info-box">
+            <ul>
+                <li>
+                    <p>
+                        <!-- ko i18n: 'The amount will be debited from your account by Novalnet'--><!-- /ko -->
+                    </p>
+                </li>
+                <li>
+                    <a data-bind="click: sepaMandateToggle" style="cursor:pointer;">
+                        <strong>
+                            <strong><!-- ko i18n: 'I hereby grant the mandate for the SEPA direct debit'--><!-- /ko --></strong>
+                            <!-- ko i18n: '(electronic transmission)'--><!-- /ko -->
+                            <strong><!-- ko i18n: 'and confirm that the given bank details are correct!'--><!-- /ko --></strong>
+                        </strong>
+                    </a>
+                    <div id="sepa_mandate_details" style="display:none; padding:5px; border:1px solid; border-color:#ddd;">
+                        <!-- ko i18n: 'I authorise (A) Novalnet AG to send instructions to my bank to debit my account and (B) my bank to debit my account in accordance with the instructions from Novalnet AG.'--><!-- /ko -->
+                        <br>
+                        <br>
+                        <strong><!-- ko i18n: 'Creditor identifier: DE53ZZZ00000004253'--><!-- /ko --></strong>
+                        <br>
+                        <br>
+                        <strong><!-- ko i18n: 'Note:'--><!-- /ko --></strong>
+                        <!-- ko i18n: 'You are entitled to a refund from your bank under the terms and conditions of your agreement with bank. A refund must be claimed within 8 weeks starting from the date on which your account was debited.'--><!-- /ko -->
+                    </div>
+                    <br>
+                    <p class="nn-instructions" data-bind="html: getInstructions()"></p>
+                </li>
+            </ul>
+        </div>
+        <div class="checkout-agreements-block">
+            <!-- ko foreach: $parent.getRegion('before-place-order') -->
+                <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+        <div class="actions-toolbar" id="review-buttons-container">
+            <div class="primary">
+                <button class="action primary checkout"
+                        type="submit"
+                        data-bind="
+                        click: placeOrder,
+                        attr: {title: $t('Place Order')},
+                        css: {disabled: !isPlaceOrderActionAllowed()},
+                        enable: (getCode() == isChecked())
+                        "
+                        disabled>
+                    <span data-bind="i18n: 'Place Order'"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
