@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="left">
+            <referenceBlock name="sales_order_tabs">
+                <action method="addTab">
+                    <argument name="name" xsi:type="string">order_novalnet_instalment</argument>
+                    <argument name="block" xsi:type="string">Novalnet\Payment\Block\Adminhtml\Sales\Order\View\Tab\Instalment</argument>
+                </action>
+            </referenceBlock>
+        </referenceContainer>
+    </body>
+</page>

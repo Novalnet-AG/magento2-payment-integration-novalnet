@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="payment_method_is_active">
+        <observer name="novalnet_payment_method_is_active" instance="Novalnet\Payment\Observer\PaymentMethodIsActive"/>
+    </event>
+    <event name="payment_method_assign_data">
+        <observer name="novalnet_payment_data_assign" instance="Novalnet\Payment\Observer\DataAssignObserver" />
+    </event>
+    <event name="checkout_submit_all_after">
+        <observer name="novalnet_payment_set_order_status" instance="Novalnet\Payment\Observer\ProcessNovalnetPayment" />
+    </event>
+    <event name="sales_order_invoice_pay">
+        <observer name="novalnet_payment_invoice_mail" instance="Novalnet\Payment\Observer\ProcessCaptureAction" />
+    </event>
+    <event name="sales_order_payment_void">
+        <observer name="novalnet_payment_void_status" instance="Novalnet\Payment\Observer\SetVoidStatus" />
+    </event>
+    <event name="sales_order_place_before">
+      <observer name="novalnet_payment_sales_order_place_before" instance="Novalnet\Payment\Observer\OrderPlacebefore"/>
+   </event>
+   <event name="shortcut_buttons_container">
+        <observer name="novalnet_payment_shortcut_buttons" instance="Novalnet\Payment\Observer\ApplePayButtons"/>
+    </event>
+</config>
