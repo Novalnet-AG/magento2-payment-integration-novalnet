@@ -1,0 +1,84 @@
+<?php
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+
+/**
+ * @var $block Novalnet\Payment\Block\Method\Form\Sepa
+ */
+$paymentMethodcode = $block->escapeHtml($block->getMethodCode());
+$formData = [
+    'code' => $paymentMethodcode
+];
+$serializedFormData = $block->jsonHelper()->jsonEncode($formData);
+?>
+<fieldset class="admin__fieldset payment-method"
+          id="payment_form_<?= /* @noEscape */ $paymentMethodcode; ?>"
+          style="display:none"
+          data-mage-init='{"novalnetSepaFormJs":<?= /* @noEscape */ $serializedFormData; ?>}'>
+    <div class="admin__field">
+        <!-- Payment logo -->
+        <?php if ($block->getPaymentLogo($paymentMethodcode)): ?>
+            <img src="<?= /* @noEscape */ $block->getPaymentLogo($paymentMethodcode); ?>"
+                 alt="<?= /* @noEscape */ $block->getMethod()->getConfigData('title'); ?>"
+                 title="<?= /* @noEscape */ $block->getMethod()->getConfigData('title'); ?>"
+                 style="max-height:75px;" />
+        <?php endif; ?>
+        <!-- Test mode notification -->
+        <?php if ($block->getTestMode($paymentMethodcode)): ?>
+            <div class="nn-mode">
+                <div class="nn-test-drive"><?= $block->escapeHtml(__('TestMode')); ?></div>
+            </div>
+        <?php endif; ?>
+    </div>
+    <div class="field-type admin__field">
+        <label class="admin__field-label" for="<?= /* @noEscape */ $paymentMethodcode; ?>_account_number">
+            <?= $block->escapeHtml(__('IBAN')); ?><span class="required">*</span>
+        </label>
+        <div class="admin__field-control">
+            <input type="text"
+                   id="<?= /* @noEscape */ $paymentMethodcode; ?>_account_number"
+                   title="<?= $block->escapeHtml(__('IBAN')); ?>"
+                   name="payment[novalnetSepa_iban]"
+                   class="admin__control-text required-entry"
+                   placeholder="<?= $block->escapeHtml('DE00 0000 0000 0000 0000 00'); ?>"
+                   style="text-transform:uppercase;" value="" autocomplete="off"/>
+        </div>
+    </div>
+    <div class="field-type admin__field">
+        <div class="admin__field-control">
+            <!-- Payment description -->
+            <p>
+                <?= $block->escapeHtml(__('The amount will be debited from your account by Novalnet')); ?><br>
+            </p>
+            <a id = "sepa_mandate_toggle" style = "cursor:pointer;" class="resp-accordion"><strong><strong><?= $block->escapeHtml(__('I hereby grant the mandate for the SEPA direct debit')) ?>
+            </strong> <?= $block->escapeHtml(__('(electronic transmission)')) ?>
+            <strong><?= $block->escapeHtml(__('and confirm that the given bank details are correct!')) ?></strong></strong></a>
+            <div class="resp-accordion" id="sepa_mandate_details" style="display:none; padding:5px; border: 1px solid; border-color: #ddd;">
+                <?= $block->escapeHtml(__('I authorise (A) Novalnet AG to send instructions to my bank to debit my account and (B) my bank to debit my account in accordance with the instructions from Novalnet AG.')) ?>
+                <br>
+                <br>
+                <strong><?= $block->escapeHtml(__('Creditor identifier: DE53ZZZ00000004253')) ?></strong>
+                <br>
+                <br>
+                <strong><?= $block->escapeHtml(__('Note:')) ?></strong>
+                <?= $block->escapeHtml(__('You are entitled to a refund from your bank under the terms and conditions of your agreement with bank. A refund must be claimed within 8 weeks starting from the date on which your account was debited.')) ?>
+            </div>
+        </div>
+    </div>
+</fieldset>

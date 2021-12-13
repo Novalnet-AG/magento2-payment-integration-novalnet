@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+-->
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <group id="novalnetIdeal" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>iDEAL</label>
+        <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Display payment method</label>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>payment/novalnetIdeal/active</config_path>
+        </field>
+        <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Novalnet Title</label>
+            <config_path>payment/novalnetIdeal/title</config_path>
+        </field>
+        <field id="sort_order" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1"
+               showInStore="1">
+            <label>Define a sorting order</label>
+            <tooltip>This payment method will be sorted among others (in the ascending order) as per the given sort number</tooltip>
+            <validate>validate-length maximum-length-5</validate>
+            <frontend_class>validate-number</frontend_class>
+            <config_path>payment/novalnetIdeal/sort_order</config_path>
+        </field>
+        <field id="order_status" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Completed order status</label>
+            <tooltip>Status to be used for successful orders</tooltip>
+            <source_model>Magento\Sales\Model\Config\Source\Order\Status</source_model>
+            <config_path>payment/novalnetIdeal/order_status</config_path>
+        </field>
+        <field id="instructions" translate="label" type="textarea" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Notification for the buyer</label>
+            <tooltip>The entered text will be displayed on the checkout page</tooltip>
+            <validate>validate-no-html-tags</validate>
+            <config_path>payment/novalnetIdeal/instructions</config_path>
+        </field>
+        <field id="user_group_excluded" translate="label" type="multiselect" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>User Group Excluded</label>
+            <can_be_empty>1</can_be_empty>
+            <source_model>Novalnet\Payment\Model\Adminhtml\Source\CustomerGroups</source_model>
+            <config_path>payment/novalnetIdeal/user_group_excluded</config_path>
+        </field>
+        <field id="allowspecific" translate="label" type="allowspecific" sortOrder="70" showInDefault="9"
+               showInWebsite="1" showInStore="1">
+            <label>Payment from Applicable Countries</label>
+            <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+            <config_path>payment/novalnetIdeal/allowspecific</config_path>
+        </field>
+        <field id="specificcountry" translate="label" type="multiselect" sortOrder="80" showInDefault="1"
+               showInWebsite="1" showInStore="1">
+            <label>Payment from Specific Countries</label>
+            <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+            <config_path>payment/novalnetIdeal/specificcountry</config_path>
+        </field>
+        <field id="min_order_total" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Minimum Order Total</label>
+            <validate>validate-number validate-zero-or-greater validate-length maximum-length-15</validate>
+            <config_path>payment/novalnetIdeal/min_order_total</config_path>
+        </field>
+        <field id="max_order_total" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Maximum Order Total</label>
+            <validate>validate-number validate-zero-or-greater validate-length maximum-length-15</validate>
+            <config_path>payment/novalnetIdeal/max_order_total</config_path>
+        </field>
+        <field id="orders_count" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Minimum Orders Count</label>
+            <validate>validate-number validate-zero-or-greater validate-length maximum-length-5</validate>
+            <tooltip>Default: '0' for disabled check | Minimum count of orders (in the past) needed for the customer to use this payment method</tooltip>
+            <config_path>payment/novalnetIdeal/orders_count</config_path>
+        </field>
+    </group>
+</include>
