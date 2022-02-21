@@ -1,0 +1,106 @@
+<?php
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+
+/**
+ * @var $block Novalnet\Payment\Block\Method\Form\InvoiceInstalment
+ */
+$paymentMethodcode = $block->escapeHtml($block->getMethodCode());
+$formData = [
+    'code' => $paymentMethodcode
+];
+$serializedFormData = $block->jsonHelper()->jsonEncode($formData);
+$orderTotal = $block->novalnetHelper()->getAdminCheckoutSession()->getQuote()->getGrandTotal();
+$instalmentPeriods = [];
+$allcycles = explode(',', $block->getInstalmentCycles());
+foreach ($allcycles as $allcycle) {
+    if (($orderTotal / $allcycle) >= 9.99) {
+        $instalmentPeriods[$allcycle] = $allcycle .' X '. $block->updateCurrency(sprintf('%0.2f', $orderTotal/$allcycle), true, false) . '('. __(' per month').')';
+    }
+}
+?>
+<fieldset class="admin__fieldset payment-method"
+          id="payment_form_<?= /* @noEscape */ $paymentMethodcode; ?>"
+          style="display:none"
+          data-mage-init='{"novalnetInvoiceFormJs":<?= /* @noEscape */ $serializedFormData; ?>}'>
+    <div class="admin__field">
+        <!-- Payment logo -->
+        <?php if ($block->getPaymentLogo($paymentMethodcode)): ?>
+            <img src="<?= /* @noEscape */ $block->getPaymentLogo($paymentMethodcode); ?>"
+               alt="<?= /* @noEscape */ $block->getMethod()->getConfigData('title'); ?>"
+               title="<?= /* @noEscape */ $block->getMethod()->getConfigData('title'); ?>"
+               style="max-height:75px;" />
+        <?php endif; ?>
+        <!-- Test mode notification -->
+        <?php if ($block->getTestMode($paymentMethodcode)): ?>
+            <div class="nn-mode">
+                <div class="nn-test-drive"><?= $block->escapeHtml(__('TestMode')); ?></div>
+            </div>
+        <?php endif; ?>
+        <!-- Instalment Payment -->
+        <?php if ($block->novalnetHelper()->validateCompany($paymentMethodcode)): ?>
+            <div class="field-type admin__field nn-payment-instalment">
+                <label class="admin__field-label" for="<?= /* @noEscape */ $paymentMethodcode; ?>_dob">
+                    <?= $block->escapeHtml(__('Your date of birth')); ?><span class="required">*</span>
+                </label>
+                <div class="admin__field-control control">
+                    <input type="text"
+                           class="admin__control-text required-entry"
+                           name="payment[novalnetInvoiceInstalment_dob]"
+                           maxlength="10"
+                           id="<?= /* @noEscape */ $paymentMethodcode; ?>_dob"
+                           title="<?= $block->escapeHtml(__('Date of Birth')); ?>"
+                           autocomplete="off"
+                           placeholder="<?= $block->escapeHtml(__('DD.MM.YYYY')); ?>"
+                           onkeydown = "return NovalnetUtility.isNumericBirthdate(this, event)"
+                           onblur  = "NovalnetUtility.validateDateFormat(this.value)" />
+                </div>
+            </div>
+        <?php endif; ?>
+        <div class="field-type admin__field">
+            <label class="admin__field-label" for="<?= /* @noEscape */ $paymentMethodcode; ?>_cycle">
+                <h3><?= $block->escapeHtml(__('Choose your instalment plan')); ?></h3>
+                <div class="admin__field-control">
+                    <select id="<?= /* @noEscape */ $paymentMethodcode; ?>_cycle" name="payment[novalnetInvoiceInstalment_cycle]"
+                            class="select required-entry admin__control-select validate-select">
+                    <?php foreach ($instalmentPeriods as $instalmentKey => $instalmentValue): ?>
+                        <option value="<?= /* @noEscape */ $instalmentKey; ?>">
+                            <?= /* @noEscape */ $instalmentValue; ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                </div>
+            </label>
+        </div>
+        <div class="field-type admin__field">
+            <div class="admin__field-control">
+                <div class="novalnetInvoiceInstalment-details"></div>
+                <!-- Payment description -->
+                <p>
+                    <?= $block->escapeHtml(__('You will receive an e-mail with the Novalnet account details to complete the payment')); ?><br>
+                </p>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" id="invoiceinstalment_total" value="<?= /* @noEscape */ $orderTotal ?>">
+    <input type="hidden" id="invoiceinstalment_currency" value="<?= /* @noEscape */ $block->getCurrentCurrencySymbol(); ?>">
+    <input type="hidden" name="invoiceinstalment_cycle_detail_url"
+        id="invoiceinstalment_cycle_detail_url"
+        value="<?= /* @noEscape */ $block->getInstalmentCycleDetailUrl(); ?>" />
+</fieldset>

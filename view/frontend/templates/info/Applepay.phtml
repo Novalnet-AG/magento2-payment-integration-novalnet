@@ -1,0 +1,75 @@
+<?php
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+
+/**
+ * @var $block \Novalnet\Payments\Block\Info\Applepay
+ */
+$info = $block->getInfo();
+$transactionId = $block->getAdditionalData('NnTid') ? $block->getAdditionalData('NnTid') : $info->getLastTransId();
+?>
+<?php if ($info): ?>
+    <?php if ($block->getAdditionalData('NnTestMode')): ?>
+        <div style="color:white;font-weight:bold;background:red;padding:5px 10px;text-align:center;font-size:15px">
+            <?= /* @noEscape */ __('Test order') ?>
+        </div>
+    <?php endif; ?>
+    <?= $block->escapeHtml($block->getMethod()->getTitle()) ?><br>
+
+    <?php if ($transactionId): ?>
+        <?= /* @noEscape */ __('Novalnet Transaction ID: '). $transactionId ?><br><br>
+    <?php endif; ?>
+
+    <?php if ($block->getAdditionalData('ApiProcess') == 'capture'): ?>
+        <?= /* @noEscape */ __(
+            'The transaction has been confirmed on %1',
+            $block->getAdditionalData('ApiProcessedAt')
+        ) ?><br><br>
+    <?php elseif ($block->getAdditionalData('ApiProcess') == 'void'): ?>
+        <?= /* @noEscape */ __(
+            'The transaction has been canceled on %1',
+            $block->getAdditionalData('ApiProcessedAt')
+        ) ?><br><br>
+    <?php endif; ?>
+
+    <?php if ($block->getAdditionalData('NnRefunded')): ?>
+        <?php foreach ($block->getAdditionalData('NnRefunded') as $key => $value): ?>
+            <?php if (preg_match("/-refund/i", $value['reftid'])): ?>
+                <?= /* @noEscape */ __(
+                    'Refund has been initiated for the TID:%1 with the amount %2',
+                    $block->novalnetHelper()->makeValidNumber($value['reqtid']),
+                    $value['refamount']
+                ) ?><br>
+            <?php else: ?>
+                <?= /* @noEscape */ __(
+                    'Refund has been initiated for the TID: %1 with the amount %2. New TID:%3',
+                    $block->novalnetHelper()->makeValidNumber($value['reqtid']),
+                    $value['refamount'],
+                    $block->novalnetHelper()->makeValidNumber($value['reftid'])
+                ) ?><br>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
+
+    <?php if ($block->getAdditionalData('NnComments')): ?>
+        <?= /* @noEscape */ $block->getAdditionalData('NnComments') ?>
+    <?php endif; ?>
+<?php else: ?>
+    <?= /* @noEscape */ __('Error in getting payment method') ?>
+<?php endif; ?>

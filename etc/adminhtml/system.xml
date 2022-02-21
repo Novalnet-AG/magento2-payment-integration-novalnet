@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="payment">
+            <group id="novalnet_global" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <comment><![CDATA[<div class='novalnet-payment-logo'></div><div class='novalnet-payment-text'>Secured and trusted means of accepting all payment methods supported worldwide. <br>Novalnet provides the most convenient way to increase your sales and deliver seamless checkout experience for your customers.</div>]]></comment>
+                <fieldset_css>novalnet-section</fieldset_css>
+                <frontend_model>Magento\Paypal\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
+                <include path="Novalnet_Payment::system/novalnet_documentation.xml"/>
+                <include path="Novalnet_Payment::system/novalnet_global_config.xml"/>
+                <group id="nn_payment_methods" translate="label" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <fieldset_css>novalnet-payment-section</fieldset_css>
+                    <label>Payments</label>
+                    <include path="Novalnet_Payment::system/novalnet_payment_notice.xml"/>
+                    <include path="Novalnet_Payment::system/novalnet_sepa.xml"/>
+                    <include path="Novalnet_Payment::system/novalnet_cc.xml"/>
+                    <include path="Novalnet_Payment::system/novalnet_applepay.xml"/>
+                    <include path="Novalnet_Payment::system/novalnet_invoice.xml"/>
+                    <include path="Novalnet_Payment::system/novalnet_prepayment.xml"/>
+                    <include path="Novalnet_Payment::system/novalnet_invoice_guarantee.xml"/>
+                    <include path="Novalnet_Payment::system/novalnet_sepa_guarantee.xml"/>
+                    <include path="Novalnet_Payment::system/novalnet_invoice_instalment.xml"/>
+                    <include path="Novalnet_Payment::system/novalnet_sepa_instalment.xml"/>
+                    <include path="Novalnet_Payment::system/novalnet_ideal.xml"/>
+                    <include path="Novalnet_Payment::system/novalnet_banktransfer.xml"/>
+                    <include path="Novalnet_Payment::system/novalnet_giropay.xml"/>
+                    <include path="Novalnet_Payment::system/novalnet_cashpayment.xml"/>
+                    <include path="Novalnet_Payment::system/novalnet_przelewy.xml"/>
+                    <include path="Novalnet_Payment::system/novalnet_eps.xml"/>
+                    <include path="Novalnet_Payment::system/novalnet_paypal.xml"/>
+                    <include path="Novalnet_Payment::system/novalnet_postfinance_card.xml"/>
+                    <include path="Novalnet_Payment::system/novalnet_postfinance.xml"/>
+                    <include path="Novalnet_Payment::system/novalnet_bancontact.xml"/>
+                    <include path="Novalnet_Payment::system/novalnet_multibanco.xml"/>
+                </group>
+            </group>
+        </section>
+    </system>
+</config>

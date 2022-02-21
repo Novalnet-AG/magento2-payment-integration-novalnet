@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+-->
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+    <route url="/V1/novalnet/activate_product_key/:signature/:payment_access_key" method="GET">
+        <service class="Novalnet\Payment\Api\NNRepositoryInterface" method="activateProductKey"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/novalnet/config_webhook_url/:signature/:payment_access_key" method="GET">
+        <service class="Novalnet\Payment\Api\NNRepositoryInterface" method="configWebhookUrl"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/novalnet/payment/redirect_url/:quote_id" method="GET">
+        <service class="Novalnet\Payment\Api\NNRepositoryInterface" method="getRedirectURL"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/novalnet/payment/remove_token/:transaction_row_id" method="GET">
+        <service class="Novalnet\Payment\Api\NNRepositoryInterface" method="removeToken"/>
+        <resources>
+            <resource ref="self"/>
+        </resources>
+    </route>
+    <route url="/V1/novalnet/payment/instalment_options/:code/:total" method="GET">
+        <service class="Novalnet\Payment\Api\NNRepositoryInterface" method="getInstalmentOptions"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/novalnet/payment/instalment_cycle/:amount/:period" method="GET">
+        <service class="Novalnet\Payment\Api\NNRepositoryInterface" method="getInstalmentCycleAmount"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/novalnet/callback" method="POST">
+        <service class="Novalnet\Payment\Api\NNRepositoryInterface" method="callback"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/novalnet/payment/addToCart" method="POST">
+        <service class="Novalnet\Payment\Api\NNRepositoryInterface" method="addToCart"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/novalnet/payment/placeOrder" method="POST">
+        <service class="Novalnet\Payment\Api\NNRepositoryInterface" method="placeOrder"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/novalnet/payment/getCart" method="POST">
+        <service class="Novalnet\Payment\Api\NNRepositoryInterface" method="getCart"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/novalnet/payment/estimateShippingMethod" method="POST">
+        <service class="Novalnet\Payment\Api\NNRepositoryInterface" method="estimateShippingMethod"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/novalnet/payment/getProductPageParams" method="POST">
+        <service class="Novalnet\Payment\Api\NNRepositoryInterface" method="getProductPageParams"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/novalnet/payment/applyShippingMethod" method="POST">
+        <service class="Novalnet\Payment\Api\NNRepositoryInterface" method="applyShippingMethod"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+</routes>
