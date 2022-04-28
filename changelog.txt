@@ -1,8 +1,9 @@
 *** Changelog ***
 
-= 12.2.0 - 2022.04.21 =
+= 12.2.0 - 2022.04.28 =
 * New      - Added "state" parameter in the payment request
 * Enhanced - Updated payment logo for sofort payment
+* Fix      - Compatibility for PHP version 8.1
 * Fix      - Nullified shipping parameters for digital service orders
 * Fix      - Corresponding subshops logo displayed instead of the main shop logo on the instalment order email
 
