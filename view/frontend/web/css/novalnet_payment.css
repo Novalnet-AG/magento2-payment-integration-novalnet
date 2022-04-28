@@ -1,0 +1,349 @@
+.instalment-details-table tbody tr th, .instalment-details-table tbody tr td {
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border: .1rem solid #8a837f;
+    padding: 5px 10px;
+}
+.instalment-details-table thead th {
+    background-color: #514943;
+    border: .1rem solid #8a837f;
+    border-left-color: transparent;
+    color: #fff;
+    font-weight: 600;
+    padding: 5px 10px;
+    text-align: left;
+}
+.instalment-details-table tr {
+    transition: background 0.2s ease-in;
+}
+.instalment-details-table tr:nth-child(even) {
+    background: #f5f5f5;
+}
+.instalment-details-table {
+    margin-bottom: 30px;
+}
+.checkout-payment-method .nnpayment-logo {
+    max-height: 75px;
+}
+.nntoken.action.delete {
+    padding-left: 15px;
+}
+.nntoken.action.delete:before {
+    content: '\e604';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 15px;
+    line-height: 18px;
+    color: #757575;
+    font-family: 'luma-icons';
+    vertical-align: middle;
+    display: inline-block;
+    font-weight: normal;
+    overflow: hidden;
+    speak: none;
+    text-align: center;
+}
+.nntoken.action.delete > span {
+    border: 0;
+    clip: rect(0, 0, 0, 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+.nntoken-remove-popup-modal.modal-popup .modal-header {
+    padding-top: 1.8rem;
+}
+.nntoken-remove-popup-modal.modal-slide .modal-content {
+    padding-bottom: 1rem;
+}
+.nntoken-remove-popup-modal.modal-popup .modal-footer {
+    padding-bottom: 1rem;
+    padding-top: 1rem;
+}
+.nn-payment-guarantee, .nn-payment-instalment {
+    display: block;
+    position: relative;
+    width: 100%;
+}
+.nn-payment-guarantee .control, .nn-payment-instalment .control {
+    display: block;
+    position: relative;
+    width: 100%;
+}
+.nn-payment-guarantee .control input, .nn-payment-instalment .control input {
+    width: 225px;
+    max-width: 225px;
+}
+.nn-payment-guarantee .control .nn-customer_dob_mm, .nn-payment-instalment .control .nn-customer_dob_mm {
+    width: 120px;
+    max-width: 120px;
+}
+.nn-payment-guarantee .control .autocomplete, .nn-payment-instalment .control .autocomplete {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    max-width: 80px;
+}
+.nn-payment-guarantee .control .autocomplete-items, .nn-payment-instalment .control .autocomplete-items {
+    display: block;
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    border-top: none;
+    z-index: 99;
+    width: 75px;
+}
+.nn-payment-guarantee .control .autocomplete-items div, .nn-payment-instalment .control .autocomplete-items div {
+    padding: 4px 10px;
+    cursor: pointer;
+    background-color: #fff;
+    border-bottom: 1px solid #d4d4d4;
+}
+.nn-payment-guarantee .control div.mage-error {
+    display: none !important;
+}
+.nn-payment-instalment .control div.mage-error {
+    display: none !important;
+}
+.nn-test-drive{
+    position: relative;
+    background-color: #0080c9;
+    color: #fff;
+    padding: 10px 20px;
+    margin-bottom: 8px;
+    font-size: 10px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 0.8px;
+    border-radius: 0px 0px 5px 5px;
+    transition: transform 0.5s ease 0.5s;
+    animation: novalnet-blinker 4s linear infinite;
+    font-weight: bold;
+    float:right;
+}
+@keyframes novalnet-blinker {
+    100% {
+    opacity: 0;
+    }
+}
+
+.info-box{
+    position:relative;
+    width:auto;
+    height: auto;
+    background: content-box;
+    font-size: 14px;
+    color: #333;
+    margin: 20px 0px;
+    padding:1em 1em;
+    border-left: 5px solid #0080c9;
+    box-shadow: 0 0 8px 0px rgba(0,0,0,.4);
+    clear:both;
+    word-break: break-word;
+}
+.info-box ul{
+    margin: 0 20px 0px 20px;
+    padding: 0;
+}
+.info-box li{
+    list-style: disc !important;
+}
+.info-box li:before{
+    display:block !important;
+}
+.info-box p{
+    padding:0 1em;
+    margin-bottom:0px;
+}
+.info-box a{
+    padding:0 1em;
+    margin-bottom:0px;
+    display:block;
+}
+.novalnet-challenge-window-overlay {
+    position: fixed;
+    width: 100%;
+    height: 100% ! important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 999;
+    cursor: pointer;
+}
+.info-box .nn-instructions {
+    white-space: break-spaces;
+}
+.field-tooltip {
+    cursor: pointer;
+    position: relative;
+    right: 0;
+    top: 0;
+    display: inline-block;
+}
+
+@media screen and (min-width: 270px) and (max-width: 330px) {
+    #novalnet_form_cc {
+        width: 100%;
+    }
+    
+    #novalnet_form_cc .field-tooltip .field-tooltip-content {
+        right: -10px;
+        top: 40px;
+        left: 475%;
+        transform: translateX(-62%);
+    }
+    #novalnet_form_cc .field-tooltip .field-tooltip-content::before, #novalnet_form_cc .field-tooltip .field-tooltip-content::after {
+        left: 28%;
+    }
+}
+@media screen and (min-width: 331px) and (max-width: 355px) {
+    #novalnet_form_cc .field-tooltip .field-tooltip-content {
+        right: -10px;
+        top: 40px;
+        left: -75px;
+    }
+    #novalnet_form_cc .field-tooltip .field-tooltip-content::before, #novalnet_form_cc .field-tooltip .field-tooltip-content::after {
+        left: 75px;
+    }
+}
+@media screen and (min-width: 356px) and (max-width: 384px) {
+    #novalnet_form_cc .field-tooltip .field-tooltip-content {
+        right: -10px;
+        top: 40px;
+        left: -30px;
+    }
+    #novalnet_form_cc .field-tooltip .field-tooltip-content::before, #novalnet_form_cc .field-tooltip .field-tooltip-content::after {
+        left: 30px;
+    }
+}
+@media screen and (min-width: 385px) and (max-width: 410px) {
+    #novalnet_form_cc .field-tooltip .field-tooltip-content {
+        right: -10px;
+        top: 40px;
+        left: 0px;
+    }
+    #novalnet_form_cc .field-tooltip .field-tooltip-content::before, #novalnet_form_cc .field-tooltip .field-tooltip-content::after {
+        left: 0px;
+    }
+}
+@media screen and (min-width: 331px) and (max-width: 768px) {
+
+    #novalnet_form_cc {
+        width: 100%;
+    }
+}
+div.novalnet-payment-saved-payments {
+    clear: both;
+}
+
+/*novalnet apple pay css*/
+
+.apple-pay-button {
+    width: 250px;
+    height: 40px;
+    display: inline-block;
+    -webkit-appearance: -apple-pay-button;
+    cursor: pointer;
+}
+
+.apple-pay-button-cart {
+    width: 150px;
+    height: 40px;
+    display: inline-block;
+    -webkit-appearance: -apple-pay-button;
+    cursor: pointer;
+}
+
+.apple-pay-button-with-text>* {
+    display: none;
+}
+
+.apple-pay-button-black-with-text {
+    -apple-pay-button-style: black; 
+}
+
+.apple-pay-button-white-with-text {
+    -apple-pay-button-style: white;
+}
+
+.apple-pay-button-white-with-line-with-text {
+    -apple-pay-button-style: white-outline;
+}
+
+.apple-pay-button-text-plain {
+    -apple-pay-button-type: Plain;
+}
+
+.apple-pay-button-text-book {
+    -apple-pay-button-type: book;
+}
+
+.apple-pay-button-text-buy {
+    -apple-pay-button-type: buy;
+}
+
+.apple-pay-button-text-check-out {
+    -apple-pay-button-type: check-out;
+}
+
+.apple-pay-button-text-contribute {
+    -apple-pay-button-type: Contribute;
+}
+
+.apple-pay-button-text-order {
+    -apple-pay-button-type: Order;
+}
+
+.apple-pay-button-text-donate {
+    -apple-pay-button-type: donate;
+}
+
+.apple-pay-button-text-subscribe {
+    -apple-pay-button-type: Subscribe;
+}
+
+.apple-pay-button-text-tip {
+    -apple-pay-button-type: Tip;
+}
+
+.apple-pay-button-text-top-up {
+    -apple-pay-button-type: Top Up;
+}
+
+.apple-pay-button-text-set-up {
+    -apple-pay-button-type: Set Up;
+}
+
+.apple-pay-button-text-add-money {
+    -apple-pay-button-type: Add Money;
+}
+
+.apple-pay-button-text-support {
+    -apple-pay-button-type: Support;
+}
+
+.apple-pay-button-text-rent {
+    -apple-pay-button-type: Rent;
+}
+
+.apple-pay-button-text-reload {
+    -apple-pay-button-type: Reload;
+}
+
+#novalnet_applepay_productbtn, #novalnet_applepay_minicartbtn,#novalnet_applepay_cartbtn {
+    width: 100%;
+}
+
+@media only screen and (min-width: 768px) {
+    #novalnet_applepay_productbtn {
+        width: 50%;
+    }
+}
