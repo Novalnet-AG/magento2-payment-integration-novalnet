@@ -1,0 +1,16 @@
+{
+    "name": "novalnet/module-payment",
+    "description": "Demonstrates integration with payment gateway",
+    "type": "magento2-module",
+    "version": "12.3.0",
+    "license": [
+        "OSL-3.0",
+        "AFL-3.0"
+    ],
+    "autoload": {
+        "files": [ "registration.php" ],
+        "psr-4": {
+            "Novalnet\\Payment\\": ""
+        }
+    }
+}
