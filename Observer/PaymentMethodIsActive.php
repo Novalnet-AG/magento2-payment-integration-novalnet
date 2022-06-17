@@ -86,7 +86,6 @@ class PaymentMethodIsActive implements ObserverInterface
                 ]
             )) {
                 $orderAmount = $this->novalnetRequestHelper->getFormattedAmount($quote->getBaseGrandTotal());
-                $countryCode = strtoupper($quote->getBillingAddress()->getCountryId()); // Get country code
                 $b2b = $this->novalnetConfig->getPaymentConfig($paymentMethodCode, 'allow_b2b_customer');
                 $force = "";
 
@@ -100,8 +99,12 @@ class PaymentMethodIsActive implements ObserverInterface
                     $force = $this->novalnetConfig->getPaymentConfig($paymentMethodCode, 'payment_guarantee_force');
                 }
 
+                $countryId = $quote->getBillingAddress()->getCountryId();
+                $isAllowedCountry = $countryId
+                    ? $this->novalnetConfig->isAllowedCountry(strtoupper($countryId), $b2b)
+                    : true;
                 if (!$force && ($orderAmount < 999 || $quote->getBaseCurrencyCode() != 'EUR'
-                    || !$this->novalnetConfig->isAllowedCountry($countryCode, $b2b) ||
+                    || !$isAllowedCountry ||
                     ($this->novalnetRequestHelper->isAdmin() && !$this->checkBillingShippingAreSame($quote)))
                 ) {
                     $available = false;
