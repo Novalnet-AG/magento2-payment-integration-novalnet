@@ -1,0 +1,33 @@
+<?php
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+?>
+<?php if ($block->isPageEnabledForApplePay('shopping_cart_page')): ?>
+<div id="novalnet_applepay_cartdiv" style="display:none" >
+    <div id="novalnet_applepay_cartbtn" class="apple-pay-button" ></div>
+</div>
+<script>
+    require(['jquery', 'domReady!', 'Novalnet_Payment/js/novalnetApplePayHelper'],
+         function($, domReady, nnApplePayHelperJs) {
+          nnApplePayHelperJs.getCartItems(function(cartPagequote) {
+              nnApplePayHelperJs.initCartPage(cartPagequote);
+          });
+        });
+</script>
+<?php endif; ?>
