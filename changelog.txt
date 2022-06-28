@@ -1,4 +1,8 @@
 *** Changelog ***
+= 12.3.1 - 2022.06.28 =
+* Fix    - Compatibility for PHP version 8.1
+* Fix    - Invalid text appended along with the TID during authorisation and refund process
+
 = 12.3.0 - 2022.06.07 =
 * New      - Implemented Online bank transfer payment
 
