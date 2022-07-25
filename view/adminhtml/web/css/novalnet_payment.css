@@ -1,0 +1,145 @@
+.nn-payment-guarantee, .nn-payment-instalment {
+    display: block;
+    position: relative;
+    width: 100%;
+}
+.nn-payment-guarantee .control, .nn-payment-instalment .control {
+    display: block;
+    position: relative;
+    width: 100%;
+}
+.nn-payment-guarantee .control input, .nn-payment-instalment .control input {
+    width: 125px;
+    max-width: 125px;
+}
+.nn-payment-guarantee .control .nn-customer_dob_mm, .nn-payment-instalment .control .nn-customer_dob_mm {
+    width: 125px;
+    max-width: 125px;
+}
+.nn-payment-guarantee .control .autocomplete, .nn-payment-instalment .control .autocomplete {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    max-width: 80px;
+}
+.nn-payment-guarantee .control .autocomplete-items, .nn-payment-instalment .control .autocomplete-items {
+    display: block;
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    border-top: none;
+    z-index: 99;
+    width: 55px;
+}
+.nn-payment-guarantee .control .autocomplete-items div, .nn-payment-instalment .control .autocomplete-items div {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    border-bottom: 1px solid #d4d4d4;
+}
+.admin__payment-method-wrapper {
+    width:100%;
+}
+.novalnet-payment-logo {
+    background: url("../images/novalnet-logo.svg")  no-repeat 0 0% / 18rem auto;
+    height: 100px;
+    width: auto;
+    padding-left: 20rem;
+    display:inline-block;
+    vertical-align: middle;
+ }
+.novalnet-section .button-container {
+    float: right;
+}
+.nn-test-drive{
+    position: relative;
+    background-color: #0080c9;
+    color: #fff;
+    padding: 10px 20px;
+    margin-bottom: 8px;
+    font-size: 10px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 0.8px;
+    border-radius: 0px 0px 5px 5px;
+    transition: transform 0.5s ease 0.5s;
+    animation: novalnet-blinker 4s linear infinite;
+    font-weight: bold;
+    float:right;
+}
+@keyframes novalnet-blinker {
+    100% {
+    opacity: 0;
+    }
+}
+
+.info-box{
+    position:relative;
+    width: auto;
+    height: auto;
+    background: content-box;
+    font-size: 14px;
+    color: #333;
+    margin: 20px 0px;
+    padding:1em;
+    letter-spacing:1px;
+    border-left: 5px solid #0080c9;
+    box-shadow: 0 0 8px 0px rgba(0,0,0,.4);
+}
+.info-box ul{
+    margin: 0 20px 0px 20px;
+    padding: 0;
+}
+.info-box li{
+    list-style: disc !important;
+}
+.info-box li:before{
+    display:block !important;
+}
+.instalment-details-table tbody tr th, .instalment-details-table tbody tr td {
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border: .1rem solid #8a837f;
+    padding: 5px 10px;
+}
+.instalment-details-table thead th {
+    background-color: #514943;
+    border: .1rem solid #8a837f;
+    border-left-color: transparent;
+    color: #fff;
+    font-weight: 600;
+    padding: 5px 10px;
+    text-align: left;
+}
+.instalment-details-table tr {
+    transition: background 0.2s ease-in;
+}
+.instalment-details-table tr:nth-child(even) {
+    background: #f5f5f5;
+}
+.instalment-details-table {
+    margin-bottom: 30px;
+}
+.novalnet-challenge-window-overlay {
+    position: fixed;
+    width: 100%;
+    height: 100% ! important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 999;
+    cursor: pointer;
+}
+.novalnet-section.section-config.active > .admin__collapsible-block + input + fieldset {
+    margin-left: 50px;
+}
+.novalnet-section .novalnet-payment-text {
+    display: inline-block;
+    vertical-align: middle;
+    width: 50%;
+}

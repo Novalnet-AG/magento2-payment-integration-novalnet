@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+-->
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <group id="novalnetInvoiceGuarantee" translate="label" type="text" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>Invoice with payment guarantee</label>
+        <comment><![CDATA[<b>Basic requirements for payment guarantee</b><br>Allowed B2C countries: DE, AT, CH<br>Allowed B2B countries: European Union<br>Allowed currency: EUR<br>Minimum order amount: 9.99 EUR or more<br>Age limit: 18 years or more<br>The billing address must be the same as the shipping address<br><br>]]></comment>
+        <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Display payment method</label>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>payment/novalnetInvoiceGuarantee/active</config_path>
+        </field>
+        <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Novalnet Title</label>
+            <config_path>payment/novalnetInvoiceGuarantee/title</config_path>
+        </field>
+        <field id="sort_order" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1"
+               showInStore="1">
+            <label>Define a sorting order</label>
+            <tooltip>This payment method will be sorted among others (in the ascending order) as per the given sort number</tooltip>
+            <validate>validate-length maximum-length-5</validate>
+            <frontend_class>validate-number</frontend_class>
+            <config_path>payment/novalnetInvoiceGuarantee/sort_order</config_path>
+        </field>
+        <field id="payment_action" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Payment Action</label>
+            <tooltip>Choose whether or not the payment should be charged immediately. Capture completes the transaction by transferring the funds from buyer account to merchant account. Authorize verifies payment details and reserves funds to capture it later, giving time for the merchant to decide on the order.</tooltip>
+            <source_model>Novalnet\Payment\Model\Adminhtml\Source\PaymentAction</source_model>
+            <config_path>payment/novalnetInvoiceGuarantee/payment_action</config_path>
+        </field>
+        <field id="manual_checking_amount" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Minimum transaction amount for authorization</label>
+            <validate>validate-greater-than-zero validate-digits validate-length maximum-length-15</validate>
+            <config_path>payment/novalnetInvoiceGuarantee/manual_checking_amount</config_path>
+            <depends>
+                <field id="payment_action">authorize</field>
+            </depends>
+        </field>
+        <field id="order_status" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Completed order status</label>
+            <tooltip>Status to be used for successful orders</tooltip>
+            <source_model>Magento\Sales\Model\Config\Source\Order\Status</source_model>
+            <config_path>payment/novalnetInvoiceGuarantee/order_status</config_path>
+        </field>
+        <field id="guarantee_force_js" translate="label" type="hidden" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+            <frontend_model>Novalnet\Payment\Block\System\Config\Form\Field\Guaranteeforce</frontend_model>
+        </field>
+        <field id="payment_guarantee_force" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Force non-guarantee payment</label>
+            <tooltip>Even if payment guarantee is enabled, payments will still be processed as non-guarantee payments if the payment guarantee requirements are not met. Review the requirements under 'Enable Payment Guarantee' in the Installation Guide.</tooltip>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <validate>validate-invoiceguarantee-force</validate>
+            <config_path>payment/novalnetInvoiceGuarantee/payment_guarantee_force</config_path>
+        </field>
+        <field id="allow_b2b_customer" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Allow B2B Customers</label>
+            <tooltip>Allow B2B customers to place order</tooltip>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>payment/novalnetInvoiceGuarantee/allow_b2b_customer</config_path>
+        </field>
+        <field id="instructions" translate="label" type="textarea" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Notification for the buyer</label>
+            <tooltip>The entered text will be displayed on the checkout page</tooltip>
+            <validate>validate-no-html-tags</validate>
+            <config_path>payment/novalnetInvoiceGuarantee/instructions</config_path>
+        </field>
+        <field id="user_group_excluded" translate="label" type="multiselect" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>User Group Excluded</label>
+            <can_be_empty>1</can_be_empty>
+            <source_model>Novalnet\Payment\Model\Adminhtml\Source\CustomerGroups</source_model>
+            <config_path>payment/novalnetInvoiceGuarantee/user_group_excluded</config_path>
+        </field>
+        <field id="allowspecific" translate="label" type="allowspecific" sortOrder="120" showInDefault="9"
+               showInWebsite="1" showInStore="1">
+            <label>Payment from Applicable Countries</label>
+            <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+            <config_path>payment/novalnetInvoiceGuarantee/allowspecific</config_path>
+        </field>
+        <field id="specificcountry" translate="label" type="multiselect" sortOrder="130" showInDefault="1"
+               showInWebsite="1" showInStore="1">
+            <label>Payment from Specific Countries</label>
+            <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+            <config_path>payment/novalnetInvoiceGuarantee/specificcountry</config_path>
+        </field>
+        <field id="min_order_total" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Minimum Order Total</label>
+            <tooltip>Minimum order amount: 9.99 EUR or more</tooltip>
+            <validate>validate-number validate-novalnet-guarantee-order-total validate-length maximum-length-15</validate>
+            <config_path>payment/novalnetInvoiceGuarantee/min_order_total</config_path>
+            <depends>
+                <field id="active">1</field>
+            </depends>
+        </field>
+        <field id="max_order_total" translate="label" type="text" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Maximum Order Total</label>
+            <validate>validate-number validate-zero-or-greater validate-length maximum-length-15</validate>
+            <config_path>payment/novalnetInvoiceGuarantee/max_order_total</config_path>
+        </field>
+        <field id="orders_count" translate="label" type="text" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Minimum Orders Count</label>
+            <validate>validate-number validate-zero-or-greater validate-length maximum-length-5</validate>
+            <tooltip>Default: '0' for disabled check | Minimum count of orders (in the past) needed for the customer to use this payment method</tooltip>
+            <config_path>payment/novalnetInvoiceGuarantee/orders_count</config_path>
+        </field>
+    </group>
+</include>
