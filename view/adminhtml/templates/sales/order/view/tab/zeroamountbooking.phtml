@@ -1,0 +1,57 @@
+<?php
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+
+$order = $block->getOrder();
+?>
+
+<section class="admin__page-section order-view-zeroamountbooking-information">
+    <fieldset class="fieldset admin__fieldset-wrapper" >
+        <div class="admin__page-section-title">
+            <span class="title"><?= $block->escapeHtml(__('Zero amount booking')) ?></span>
+        </div>
+        <div class="form-inline" >
+            <form method="get" action="<?= /* @noEscape */ $block->getUrl('novalnetpayment/sales/zeroamountupdate', ['order_id' => $block->getOrder()->getId()]) ?>" data-hasrequired="* Required Fields" autocomplete="off"  data-mage-init='{"validation":{}}' >
+                <input type="hidden" name="form_key" value="<?=  /* @noEscape */ $block->getFormKey() ?>" />
+                <div class="box-left" style="width:100%" >
+                    <div class="entry-edit" >
+                        <div class="fieldset" >
+                            <table style="width:100%" >
+                                <tbody>
+                                    <tr>
+                                        <td class="label" style="padding:10px" ><?=  /* @noEscape */ __('Transaction booking amount') ?><br><?= /* @noEscape */ __('(in minimum unit of currency. E.g. enter 100 which is equal to 1.00)') ?></br></td>
+                                        <td class="value" style="padding:10px" >
+                                            <input type="text" name="nn-amount-to-update" value="<?=  /* @noEscape */ $block->getFormattedAmount($order->getBaseGrandTotal()) ?>" class="input-text admin__control-text validate-digits" data-validate='{"required":true}' autocomplete="off" >
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label" style="padding:10px" ></td>
+                                        <td class="value" style="padding:10px" >
+                                            <button style="background-color: #514943; color: #ffffff;" type="submit" onclick="return confirm('<?=  /* @noEscape */ __('Are you sure you want to book the order amount?') ?>')" ><?= /* @noEscape */ __('Book transaction') ?></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </fieldset>
+</section>
