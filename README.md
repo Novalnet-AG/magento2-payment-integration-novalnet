@@ -85,6 +85,9 @@ For detailed documentation and other technical inquiries, please send us an emai
  - Purchase the <a href="https://marketplace.magento.com/novalnet-module-payment.html"> Magento payment extension </a> by Novalnet for free
  - Upload the package content into the root directory
  - Upgrade, compile and deploy as explained in the section above
+ 
+ ## Documentation
+Find more about Magento payment module in: https://marketplace.magento.com/media/catalog/product/novalnet-module-payment-12-4-1-ce/installation_guides.pdf<br>
 
 ## License  
 See our License Agreement at: https://www.novalnet.com/payment-plugins-free-license/
