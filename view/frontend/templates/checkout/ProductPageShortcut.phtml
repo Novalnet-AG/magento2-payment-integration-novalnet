@@ -1,0 +1,72 @@
+<?php
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+
+$isEnabled = $block->isPageEnabledForExpressCheckout('product_page');
+?>
+
+<?php if ($isEnabled['novalnetApplepay']): ?>
+    <div id="novalnet_applepay_productdiv" style="display:none" >
+        <div id="nn_applepay_product" ></div>
+        <br>
+    </div>
+<?php endif; ?>
+
+<?php if ($isEnabled['novalnetGooglepay']): ?>
+    <div id="novalnet_googlepay_productdiv" style="display:none" >
+        <div id="nn_googlepay_product" ></div>
+        <br>
+    </div>
+<?php endif; ?>
+
+<?php if ($isEnabled['novalnetApplepay'] || $isEnabled['novalnetGooglepay']): ?>
+    <script>
+        require([
+            'jquery',
+            'domReady!',
+            'Magento_Customer/js/customer-data',
+            'Novalnet_Payment/js/novalnetCheckoutHelper'
+        ], function(
+            $,
+            domReady,
+            customerData,
+            nnCheckoutHelper
+        ) {
+            const cart = customerData.get('cart');
+
+            loadProductPageButton();
+
+            cart.subscribe(function() {
+                $('#novalnet_applepay_productdiv, #novalnet_googlepay_productdiv').css({'display' : 'none'});
+                setTimeout(function() {
+                    loadProductPageButton();
+                },600);
+            });
+
+            function loadProductPageButton() {
+                nnCheckoutHelper.getQuoteValues('<?= /* @noEscape */ $block->loadProductById()["productId"]; ?>', function(productPagequote) {
+                    nnCheckoutHelper.initProductPage(
+                      '<?= /* @noEscape */ (bool) $block->loadProductById()["isVirtual"]; ?>',
+                      productPagequote
+                    );
+                });
+            }
+        });
+    </script>
+<?php endif; ?>
