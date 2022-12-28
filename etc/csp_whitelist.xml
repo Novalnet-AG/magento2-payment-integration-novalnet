@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+-->
+<csp_whitelist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Csp:etc/csp_whitelist.xsd">
+    <policies>
+        <policy id="frame-src">
+            <values>
+                <value id="novalnet_secure" type="host">secure.novalnet.de</value>
+                <value id="novalnet_barzahlen" type="host">customers.barzahlen.de</value>
+                <value id="novalnet_barzahlen_sandbox" type="host">customers-sandbox.barzahlen.de</value>
+            </values>
+        </policy>
+        <policy id="script-src">
+            <values>
+                <value id="novalnet_payport" type="host">cdn.novalnet.de</value>
+                <value id="novalnet_barzahlen" type="host">cdn.barzahlen.de</value>
+            </values>
+        </policy>
+    </policies>
+</csp_whitelist>
