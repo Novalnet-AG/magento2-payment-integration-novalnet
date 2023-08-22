@@ -1,0 +1,145 @@
+*** Changelog ***
+
+= 13.1.0 - 2023.08.22 =
+* New - Implemented BLIK payment
+
+= 13.0.1 - 2023.03.01 =
+* Fix - Adjusted payment module to display cancel option for zero-amount transactions
+* Enhanced - Payment module from lower versions of Novalnet made compatible to scale Novalnet version 13 functionalities
+
+= 13.0.0 - 2023.02.07 =
+Major version release: We've improved the seamless customer experience and brand configurations in the Novalnet Merchant Admin Portal to make it easier to preview and customise the checkout page
+
+= 12.4.4 - 2023.01.11 =
+* Fix - Adjusted payment module to display cancel option for zero-amount transactions
+* Fix - Payment module has been optimized for the Swagger tool
+
+= 12.4.3 - 2022.12.28 =
+* Fix - Payment module has been optimized for Swagger tool
+
+= 12.4.2 - 2022.12.06 =
+* Fix - "Unspecified Street" is handled with the street parameter for Apple Pay and Google Pay payments
+* Enhanced - Invoice payment name is updated for German translation
+
+= 12.4.1 - 2022.09.30 =
+* Fix - Payment module has been optimized as per PHPStan tool
+
+= 12.4.0 - 2022.09.26 =
+* New - Implemented Google pay, Trustly, Wechat and Alipay payments
+* New - Implemented Zero amount authorization for the payments Credit/Debit card and Direct Debit SEPA
+* New - Updated cart details to PayPal
+* Enhanced - Callback/Webhook events has been optimized as per the new testcase     
+
+= 12.3.1 - 2022.07.25 =
+* Enhanced - For IBAN-specific countries, the BIC field displayed for payment like Direct Debit SEPA, Direct Debit SEPA with payment guarantee and Instalment by Direct Debit SEPA 
+* Enhanced - On-hold transaction configuration has been implemented for Credit Card, Direct Debit SEPA, Direct Debit SEPA with payment guarantee, Invoice, Invoice with payment guarantee, PayPal and Applepay 
+* Enhanced - Order status has been optimized as per shop default structure
+
+= 12.3.1 - 2022.06.28 =
+* Fix    - Compatibility for PHP version 8.1
+* Fix    - Invalid text appended along with the TID during authorisation and refund process
+
+= 12.3.0 - 2022.06.07 =
+* New      - Implemented Online bank transfer payment
+
+= 12.2.0 - 2022.04.29 =
+* New      - Added "state" parameter in the payment request
+* Enhanced - Updated payment logo for sofort payment
+* Fix      - Compatibility for PHP version 8.1
+* Fix      - Nullified shipping parameters for digital service orders
+* Fix      - Corresponding subshops logo displayed instead of the main shop logo on the instalment order email
+
+= 12.1.5 - 2022.02.23 =
+* Fix       - Order status updated as Closed for cancelled installments and payment refunds
+
+= 12.1.4 - 2021.12.13 =
+* Enhanced  - Payment module is extended to support the Novalnet subscription module
+
+= 12.1.3 - 2021.11.16 =
+* Fix       - Display proper Instalment cycle amount in the recurring Instalment E-mail
+* Enhanced  - Configuration to restrict Instalment renewal notification E-mail
+
+= 12.1.2 - 2021.08.19 =
+* Fix       - Adjusted the Callback/Webhook to restrict replicating of invoice mail generation
+* Enhanced  - Credit/Debit Cards payment method description
+
+= 12.1.1 - 2021.07.07 =
+* Fix      - Adjusted the redirect payment methods to adapt to the latest shop version 2.4.2-p1
+* Fix      - Callback/Webhook order status update during credit payments
+* Fix      - Invoice mail generation for every transaction captured for invoice payments in the shop admin
+
+= 12.1.0 - 2021.05.06 =
+* New      - Implemented Apple pay payment
+
+= 12.0.4 - 2021.02.25 =
+* New      - Implemented enforce 3D secure payment for countries outside EU
+* Fix      - Transaction amount mismatch while adding tax during Credit Card authentication
+* Enhanced - Payment module has been optimized as per new testcase
+
+= 12.0.3 - 2021.02.12 =
+* Fix      - Implemented the Partial Refund feature for all payment methods
+* Fix      - Instalments cycle amount adjusted in the instalment summary
+* Fix      - Test mode text removed for cancelled live transactions
+* Fix      - Follow-up process has been adjusted for Mutlistore and Multiwebsite
+* Enhanced - Callback comments has been optimised
+
+= 12.0.2 - 2020.12.18 =
+* Enhanced - Adjusted end customer IP condition for different networks
+
+= 12.0.1 - 18.12.2020 =
+* Fix      - Amount mismatched during Credit Card authentication process
+* Fix      - Optimized IP condition check for remote address
+* Enhanced - Payment confirmation mail for end-customer designed with a new email template
+
+= 12.0.0 - 2020.11.27 =
+* Major version release: Entire restructure & optimization of the older version with usability, additional features, and customizations.
+
+= 1.3.2 - 2020.12.10 =
+* Fix      - Changing the due date affects the updated payment amount
+
+= 1.3.1 - 2020.10.29 =
+* Fix      - Chrome Samesite Cookies
+
+= 1.3.0 - 2020.08.10 =
+* Fix      - Compatibility issue for 2.4.0
+* Removed  - href links for the payment logo
+
+= 1.2.6 - 2020.05.09 =
+* New 	   - In the checkout page, instalments cycle information has been displayed for the end customer
+* New 	   - Update shipping address to PayPal
+* New      - Handled pending order cancellation for Direct Debit SEPA with payment guarantee, Invoice with payment guarantee, Instalment payment for Direct Debit SEPA and Instalment payment for Invoice
+* Fix      - Adjusted payment module to restrict double booking for redirect payments
+
+= 1.2.5 - 2020.03.09 =
+* Enhanced - Supporting remote IP based on proxy server configuration
+
+= 1.2.4 - 2020.02.04 =
+* Enhanced - Activate button implemented to trigger auto configuration call 
+* Fix      - Adjusted the redirect payment flow for guest user
+* Removed  - Instalments cycle information for the end customer
+
+= 1.2.3 -  2019.11.08 =
+* New      - For redirect payment methods, the product will be restored into the cart after payment cancellation
+* Enhanced - For Guarantee and Instalment payments, the default date separator will be filled automatically when entering the date into the Date of Birth field
+* Enhanced - Adjusted the redirect payment methods to support the shop order flow
+* Removed  - Next Instalment Date information for the end customer
+
+= 1.2.2 - 2019.10.22 =
+* New      - Implemented instalment payment for Direct Debit SEPA and Invoice 
+* Enhanced - Guaranteed payment minimum amount reduced to 9.99 EUR 
+* Enhanced - Implemented new encryption method for redirect payments 
+* Enhanced - Auto configuration call perform via cURL method 
+* Enhanced - Adjusted the payment module for IPV6 condition 
+* Enhanced - Callback has been optimized as per the new testcase 
+* Enhanced - Novalnet bank details will be displayed in invoice for on-hold transactions in Invoice, Invoice with payment guarantee, Instalment by Invoice and Prepayment 
+* Fix      - Issue in displaying VAT in checkout page 
+* Fix      - Adjusted payment module to restrict the double transaction 
+* Removed  - BIC field for Direct Debit SEPA 
+* Removed  - Payment reference configuration for Invoice / Prepayment 
+* Removed  - Transaction reference in payments
+
+= 1.2.1 - 2019.06.28 =
+* Fix 	   - Extension installation using composer
+
+= 1.2.0 - 2019.02.05 =
+*          - New release
