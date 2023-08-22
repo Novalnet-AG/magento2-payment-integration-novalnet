@@ -56,6 +56,7 @@ For detailed documentation and other technical inquiries, please send us an emai
 - Alipay
 - WeChat Pay
 - Trustly
+- Blik
 
 ## Installation via Composer
 
