@@ -1,0 +1,92 @@
+<?php
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+
+$isEnabled = $block->isPageEnabledForExpressCheckout('mini_cart_page');
+?>
+<br>
+<?php if ($isEnabled['novalnetApplepay']): ?>
+    <div id="novalnet_applepay_minicartdiv" style="display:none" >
+        <div id="nn_applepay_minicart" ></div>
+    </div>
+<?php endif; ?>
+
+<?php if ($isEnabled['novalnetApplepay'] && $isEnabled['novalnetGooglepay']): ?>
+    <br>
+<?php endif; ?>
+
+<?php if ($isEnabled['novalnetGooglepay']): ?>
+    <div id="novalnet_googlepay_minicartdiv" style="display:none" >
+        <div id="nn_googlepay_minicart" ></div>
+    </div>
+<?php endif; ?>
+
+
+<?php if ($isEnabled['novalnetApplepay'] || $isEnabled['novalnetGooglepay']): ?>
+    <script>
+        require([
+            'jquery',
+            'domReady!',
+            'Magento_Customer/js/customer-data',
+            'Novalnet_Payment/js/novalnetCheckoutHelper'
+        ], function(
+            $,
+            domReady,
+            customerData,
+            nnCheckoutHelper
+        ) {
+            const cart = customerData.get('cart');
+
+            loadMinicartButton();
+
+            cart.subscribe(function() {
+                $('#novalnet_applepay_minicartdiv, #novalnet_googlepay_minicartdiv').css({'display' : 'none'});
+                setTimeout(function() {
+                    loadMinicartButton();
+                },500);
+            });
+
+            window.addEventListener('hashchange', function() {
+                loadMinicartButton();
+            }, false);
+
+            function loadMinicartButton() {
+                let currentURL = window.location.href,
+                    pattern1 = new RegExp('/onepage/success'),
+                    isSuccesspage = pattern1.test(currentURL),
+                    pattern2 = new RegExp('/checkout/#payment'),
+                    paymentPage = pattern2.test(currentURL);
+
+                if (isSuccesspage) {
+                    customerData.reload(['cart'], true);
+                    return false;
+                }
+
+                if (paymentPage) {
+                    $('#novalnet_googlepay_minicartdiv, #novalnet_applepay_minicartdiv').css({'display' : 'none'});
+                    return false;
+                }
+
+                nnCheckoutHelper.getCartItems(function(minicartQuote) {
+                    nnCheckoutHelper.initMiniCart(minicartQuote);
+                });
+            };
+        });
+    </script>
+<?php endif; ?>
