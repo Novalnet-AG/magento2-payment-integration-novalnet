@@ -1,0 +1,15 @@
+*** Changelog ***
+
+= 1.0.3 - 2023.09.15 =
+* Enhanced - Extended the module to support Novalnet payment module version 13.1.1
+
+= 1.0.2 - 2023.02.22 =
+* Fix 	- Compatible for Magento 2.4.5-p1
+
+= 1.0.1 - 2021.12.14 =
+* Enhanced - Optimised the payment listing section
+
+= 1.0.0 - 2021.11.30 =
+* Initial release
+
+
