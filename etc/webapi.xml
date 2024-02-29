@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+-->
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+    <route url="/V1/novalnet/activate_product_key/:signature/:payment_access_key" method="GET">
+        <service class="Novalnet\Payment\Api\NovalnetRepositoryInterface" method="activateProductKey"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/novalnet/config_webhook_url/:signature/:payment_access_key" method="GET">
+        <service class="Novalnet\Payment\Api\NovalnetRepositoryInterface" method="configWebhookUrl"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/novalnet/payment/getRedirectURL" method="POST">
+        <service class="Novalnet\Payment\Api\NovalnetRepositoryInterface" method="getRedirectURL"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/novalnet/payment/placeOrder" method="POST">
+        <service class="Novalnet\Payment\Api\NovalnetRepositoryInterface" method="placeOrder"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/novalnet/payment/getPayByLink" method="POST">
+        <service class="Novalnet\Payment\Api\NovalnetRepositoryInterface" method="getPayByLink"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/novalnet/callback" method="POST">
+        <service class="Novalnet\Payment\Api\CallbackRepositoryInterface" method="callback"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+</routes>
