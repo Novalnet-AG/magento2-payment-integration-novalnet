@@ -1,0 +1,209 @@
+<?php
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+
+$product = $block->getProductData();
+$productId = $product['productId'];
+$productType = $product['type'];
+?>
+
+<?php if (!empty($product) && $block->canShowInstalmentsInfo()): ?>
+    <div>
+        <p id="novalnet-instalment-notification" style="display:none" >You can pay this product in instalments. <span id="novalnet-instalment-info-toggle" ><a>Learn more</a></span></p>
+        <div id="novalnetInstalment-details" style="display:none" >
+            <div style="border: .1rem solid #8a837f;">
+                <div class="novalnet-instalment-tab" >
+                    <div class="novalnet-instalment-tab-sepa" id="nn-sepa-instalment-view" ><span>Instalment by Direct Debit SEPA</span></div>
+                    <div class="novalnet-instalment-tab-invoice" id="nn-invoice-instalment-view" style="" >Instalment by Invoice</div>
+                </div>
+                <table class="novalnet-instalment-details-table" id="novalnet-instalment-sepa-table" >
+                    <tbody id="novalnet-instalment-sepa-tbody" >
+                    </tbody>
+                </table>
+                <table class="novalnet-instalment-details-table" id="novalnet-instalment-invoice-table" style="display:none" >
+                    <tbody id="novalnet-instalment-invoice-tbody" >
+                    </tbody>
+                </table>
+                <br>
+                <div style="padding:10px;" >
+                    <p style="font-weight: 600" >Things to note:</p>
+                    <p>Available in Germany, Austria and Switzerland</p>
+                    <p>The shipping address must be the same as the billing address</p>
+                </div>
+            </div>
+        </div>
+        <br>
+    </div>
+<?php endif; ?>
+
+<script>
+require([
+    'jquery',
+    'Magento_Ui/js/modal/modal',
+    'mage/validation',
+    'mage/storage',
+    'mage/url',
+    'Magento_Ui/js/modal/alert',
+    'mage/translate'
+], function(
+    $,
+    modal,
+    validation,
+    storage,
+    urlBuilder,
+    mageAlert,
+    $t
+ ) {
+    /**
+     * To get instalment options with price and create table
+     *
+     * @return void
+     */
+    function getInstalmentOptions(price) {
+        $('#novalnet-instalment-sepa-tbody').empty();
+        $('#novalnet-instalment-invoice-tbody').empty();
+
+        getCycles(price, function (result) {
+            if (isJson(result)) {
+                result = JSON.parse(result);
+            }
+
+            if ($.isEmptyObject(result.sepa) !== true) {
+                var i = 1;
+                $.each(result.sepa, function (id, value) {
+                    var tr = '<tr style="text-align:center" >';
+                    tr += '<td><strong>Plan ' + i + '</strong></td>';
+                    tr += '<td>' + value.instalment_key + '</td>';
+                    tr += '</tr>';
+                    i++;
+
+                    $('#novalnet-instalment-sepa-tbody').append(tr);
+                });
+            } else {
+                $('#nn-sepa-instalment-view').css({'display' : 'none'});
+                $('#nn-invoice-instalment-view').css({'width' : '100%'}).trigger('click');
+            }
+
+            if ($.isEmptyObject(result.invoice) !== true) {
+                var j = 1;
+                $.each(result.invoice, function (id, value) {
+                    var tr = '<tr style="text-align:center" >';
+                    tr += '<td><strong>Plan ' + j + '</strong></td>';
+                    tr += '<td>' + value.instalment_key + '</td>';
+                    tr += '</tr>';
+                    j++;
+
+                    $('#novalnet-instalment-invoice-tbody').append(tr);
+                });
+            } else {
+                $('#nn-invoice-instalment-view').css({'display' : 'none'});
+                $('#nn-sepa-instalment-view').css({'width' : '100%'}).trigger('click');
+            }
+
+            if ($.isEmptyObject(result.sepa) && $.isEmptyObject(result.invoice)) {
+                $('#novalnet-instalment-notification').css({'display': 'none'});
+            } else {
+                $('#novalnet-instalment-notification').css({'display': 'block'});
+            }
+        });
+    }
+
+    /**
+     * Get instalment cycles info via ajax
+     *
+     * @return void
+     */
+    function getCycles(price, callback) {
+        storage.get(
+            urlBuilder.build('rest/V1/novalnet/payment/instalment_info/' + parseFloat(price), {})
+        ).done(function (response) {
+            callback(response);
+        });
+    }
+
+    /**
+     * To check if the data is JSON
+     *
+     * @return bool
+     */
+    function isJson(data) {
+        try {
+            JSON.parse(data);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    /**
+     * Document on ready
+     */
+    $(document).ready(function () {
+        var productType = '<?= /* @noEscape */ $productType ?>',
+            priceField = '#product-price-' + '<?= /* @noEscape */ $productId ?>',
+            productPrice = '<?= /* @noEscape */ $block->getProductPrice() ?>';
+
+        getInstalmentOptions(productPrice);
+
+        $('#novalnet-instalment-info-toggle').click(function () {
+            $('#novalnetInstalment-details').slideToggle('fast');
+        });
+
+        $('#nn-sepa-instalment-view').click(function () {
+            $('.novalnet-instalment-tab-sepa').css({
+                'background-color' : '#f0f0f0',
+                'color' : 'black'
+            });
+
+            $('.novalnet-instalment-tab-invoice').css({
+                'background-color' : '#514943',
+                'color' : '#fff'
+            });
+
+            $('#novalnet-instalment-invoice-table').css({
+                'display' : 'none'
+            });
+
+            $('#novalnet-instalment-sepa-table').css({
+                'display' : 'inline-table'
+            });
+        });
+
+        $('#nn-invoice-instalment-view').click(function () {
+            $('.novalnet-instalment-tab-sepa').css({
+                'background-color' : '#514943',
+                'color' : '#fff'
+            });
+
+            $('.novalnet-instalment-tab-invoice').css({
+                'background-color' : '#f0f0f0',
+                'color' : 'black'
+            });
+
+            $('#novalnet-instalment-invoice-table').css({
+                'display' : 'inline-table'
+            });
+
+            $('#novalnet-instalment-sepa-table').css({
+                'display' : 'none'
+            });
+        });
+    });
+});
+</script>

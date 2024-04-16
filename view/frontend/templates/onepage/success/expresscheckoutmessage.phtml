@@ -1,0 +1,35 @@
+<?php
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+
+/**
+ * @var \Novalnet\Payment\Block\Onepage\Success\Message
+ */
+$gpayAdditionalData = $block->getGpayAdditionalData();
+$applePayAdditionalData = $block->getApplepayAdditionalData();
+
+?>
+
+<?php if (!empty($gpayAdditionalData)): ?>
+    <p><?= /* @noEscape */ __('Your order was successfully processed using Google Pay') ?><b><?= /* @noEscape */ $gpayAdditionalData['NnGpaysuccesstext']; ?></b></p>
+<?php endif; ?>
+
+<?php if (!empty($applePayAdditionalData)): ?>
+    <p><?= /* @noEscape */ __('Your order was successfully processed using Apple Pay') ?> <b><?= /* @noEscape */ $gpayAdditionalData['NnApplepaysuccesstext']; ?></b></p>
+<?php endif; ?>
