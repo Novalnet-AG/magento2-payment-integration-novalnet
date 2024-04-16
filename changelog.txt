@@ -1,7 +1,8 @@
 *** Changelog ***
 
-= 12.4.5 - 2024.03.25 =
-*
+= 12.4.5 - 2023.10.27 =
+* Fix - Compatibility for Magento version 2.4.6-p2
+* New - Implemented Blik payment
 
 = 12.4.4 - 2023.01.11 =
 * Fix - Adjusted payment module to display cancel option for zero-amount transactions
