@@ -1,11 +1,11 @@
 *** Changelog ***
 
-= 12.4.5 - 2024.04.16 =
-*Enhanced - Offering Guarantee and Instalment payments to B2B customers in Switzerland
-*Enhanced - Extension of Instalment Payment cycles till 36 cycles
-*Removed - One-click shopping for PayPal payment
-*Removed - Button Theme configuration for Google Pay payment
-*Removed - Payment due date configuration for Direct Debit SEPA with payment guarantee and Instalment by Direct Debit SEPA
+= 12.4.6 - 2024.04.16 =
+* Enhanced - Offering Guarantee and Instalment payments to B2B customers in Switzerland
+* Enhanced - Extension of Instalment Payment cycles till 36 cycles
+* Removed - One-click shopping for PayPal payment
+* Removed - Button Theme configuration for Google Pay payment
+* Removed - Payment due date configuration for Direct Debit SEPA with payment guarantee and Instalment by Direct Debit SEPA
 
 = 12.4.5 - 2023.10.27 =
 * Fix - Compatibility for Magento version 2.4.6-p2
