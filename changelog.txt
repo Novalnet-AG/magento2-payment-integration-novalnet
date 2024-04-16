@@ -1,6 +1,7 @@
 *** Changelog ***
 
 = 12.4.6 - 2024.04.16 =
+* Fix - Compatibility for Magento version 2.4.7
 * Enhanced - Offering Guarantee and Instalment payments to B2B customers in Switzerland
 * Enhanced - Extension of Instalment Payment cycles till 36 cycles
 * Removed - One-click shopping for PayPal payment
