@@ -29,7 +29,7 @@ For detailed documentation and other technical inquiries, please send us an emai
 
 ## Magento 2 Demo shop
 
-<a href="https://www.novalnet.de/modul/magento-2-payment/"> See here </a> for our link to demo magento store. Place your orders and test our trial checkout processes using our test credentials available in the login page of the <a href="https://magento2.novalnet.de/"> demo magento store </a>.
+<a href="https://www.novalnet.de/modul/magento-2-payment/"> See here </a> for our link to demo magento store. Place your orders and test our trial checkout processes using our test credentials available in the login page of the <a href="https://magento.novalnet.de/"> demo magento store </a>.
 
 ## Integrated payment methods
 - Direct Debit SEPA
