@@ -89,7 +89,7 @@ For detailed documentation and other technical inquiries, please send us an emai
  - Upgrade, compile and deploy as explained in the section above
  
  ## Documentation
-Find more about Magento module in: <a href="https://commercemarketplace.adobe.com/media/catalog/product/novalnet-module-payment-13-2-1-ce/installation_guides.pdf?1711349872"> See here </a>
+Find more about Magento module in: <a href="https://commercemarketplace.adobe.com/media/catalog/product/novalnet-module-payment-13-3-0-ce/installation_guides.pdf?1711349872"> See here </a>
 
 ## License  
 See our License Agreement at: https://www.novalnet.com/payment-plugins-free-license/
