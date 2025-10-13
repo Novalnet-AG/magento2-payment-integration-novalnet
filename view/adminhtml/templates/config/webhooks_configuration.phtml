@@ -1,0 +1,90 @@
+<?php
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+?>
+<script>
+    require([
+        'jquery',
+        'mage/translate',
+        'prototype',
+    ],
+    function($, $t)
+    {
+        var signature_id = 'input[id$="novalnet_global_novalnet_signature"]';
+        var payment_access_key_id = 'input[id$="novalnet_global_novalnet_payment_access_key"]';
+        var signature = $.trim($(signature_id).val());
+        var payment_access_key = $.trim($(payment_access_key_id).val());
+        $('#novalnet_configure_webhooks').css('margin-top','1em');
+        var webhookConfigUrl = '<?= /* @noEscape */ $block->getAjaxUrl() ?>' + signature + '/' + payment_access_key;
+        var progressSpan = $('#progress');
+        $('#novalnet_payments_configuration_errors').hide();
+        $('#novalnet_configure_webhooks').click(function ()
+        {
+            if ($(signature_id).val() != '' && $(payment_access_key_id).val() != '') {
+                var webhookUrl = $.trim($('#novalnet_merchant_script_vendor_script_url').val());
+                var webHook = $('#novalnet_merchant_script_vendor_script_url');
+                if (webHook.valid()) {
+                    $('#novalnet_payments_configuration_errors').hide();
+                    progressSpan.find('.processing').show();
+                    $.ajax({
+                        url: webhookConfigUrl,
+                        type: 'GET',
+                        data: {'webhookurl' : webhookUrl},
+                        dataType: 'json',
+                        success: function(response) {
+                            progressSpan.find('.processing').hide();
+                            var resultText = '';
+                            response = JSON.parse(response);
+                            response = response.result;
+                            if (response.status != 'SUCCESS') {
+                                resultText = $t(response.status_text);
+                                progressSpan.find('.configured').hide();
+                                progressSpan.find('.failed').show();
+                            } else {
+                                resultText = '<?= /* @noEscape */ __("Completed")?>';
+                                progressSpan.find('.failed').hide();
+                                progressSpan.find('.configured').show();
+                            }
+                            $('#novalnet_payments_configured_message').text(resultText);
+                        },
+                        error: function(response) {
+                           progressSpan.find('.processing').hide();
+                           resultText = '<?= /* @noEscape */ __("Failed")?>';
+                           $('#novalnet_payments_configured_message').text(resultText);
+                        }
+                    });
+                }
+            }
+        });
+    });
+</script>
+<input type="text" id="novalnet_merchant_script_vendor_script_url"
+   name="<?= /* @noEscape */ $block->getElement()->getName(); ?>"
+   value="<?= /* @noEscape */ $block->getWebHookUrl(); ?>" class="required-entry validate-url validate-no-html-tags" style="float:left;"/>
+<br>
+<?= /* @noEscape */ $block->getButtonHtml() ?>
+<span class="novalnet-webhooks-config-admin" id="progress">
+    <img class="processing" hidden="hidden" alt="Configuring" style="margin:0 5px" src="<?= /* @noEscape */ $block->getViewFileUrl('images/process_spinner.gif') ?>"/>
+    <img class="configured" hidden="hidden" alt="Configured" style="margin:-3px 5px" src="<?= /* @noEscape */ $block->getViewFileUrl('images/rule_component_apply.gif') ?>"/>
+    <img class="failed" hidden="hidden" alt="failed" style="margin:-3px 5px" src="<?= /* @noEscape */ $block->getViewFileUrl('images/rule_component_remove.gif') ?>"/>
+    <span id="novalnet_payments_configured_message"></span>
+    <div id="novalnet_payments_configuration_errors" class="message-system-inner">
+        <div class="message message-warning"></div>
+    </div>
+</span>
