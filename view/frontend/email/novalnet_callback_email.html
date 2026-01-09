@@ -1,0 +1,38 @@
+<!--@subject {{var subject}} @-->
+<!--@vars {
+"var formattedBillingAddress|raw":"Billing Address",
+"var order.getEmailCustomerNote()":"Email Order Note",
+"var order.increment_id":"Order Id",
+"layout handle=\"sales_email_order_items\" order=$order area=\"frontend\"":"Order Items Grid",
+"var payment_html|raw":"Payment Details",
+"var formattedShippingAddress|raw":"Shipping Address",
+"var order.getShippingDescription()":"Shipping Description"
+} @-->
+<body style="background:#F6F6F6; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px; margin:0; padding:0;">
+    <div style="width:55%;height:auto;margin: 0 auto;background:rgb(247, 247, 247);border: 2px solid rgb(223, 216, 216);border-radius: 5px;box-shadow: 1px 7px 10px -2px #ccc;">
+        <div style="min-height: 300px;padding:20px;">
+            <table cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tr class="email-intro">
+                    <td>
+                        <p class="greeting">Dear Mr./Ms./Mrs. {{var toName}}</p>
+                        <p>
+                            This email is sent to you ({{var toEmail}}) by {{var fromName}} from {{var fromEmail}}
+                        </p>
+                    </td>
+                </tr>
+                <tr class="email-information">
+                    <td>
+                        <table class="message-info">
+                            <tr>
+                                <td>
+                                    <br>{{var body}}
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div style='width:100%;height:20px;background:#00669D;'></div>
+    </div>
+</body>
