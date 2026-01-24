@@ -1,0 +1,46 @@
+<?php
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+?>
+
+<?php
+    $data = '{}';
+?>
+
+<fieldset
+    class="admin__fieldset payment-method"
+    id="payment_form_<?= $block->escapeHtml($block->getMethodCode()) ?>"
+    data-mage-init='{"novalnetPayJs":<?= /* @noEscape */  $data ?>}' >
+
+    <iframe frameborder="0"
+        width="100%"
+        id="novalnetPaymentIFrame"
+        scrolling="no"
+        src="<?= /* @noEscape */ $block->getIframeSrc(); ?>"
+        referrerPolicy="origin" >
+    </iframe>
+
+    <div class="no-display">
+        <input type="hidden" id="nn_chk_button" name="nn_chk_button" />
+        <input type="hidden" id="nn_can_submit_form" value="0" name="nn_can_submit_form" />
+    </div>
+
+</fieldset>
+
+
