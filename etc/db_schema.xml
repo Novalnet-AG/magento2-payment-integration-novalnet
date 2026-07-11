@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="novalnet_payment_callback" resource="default" engine="innodb" comment="Novalnet Callback execution details">
+        <column xsi:type="int" name="id" unsigned="true" nullable="false" identity="true" comment="Entity ID"/>
+        <column xsi:type="varchar" name="order_id" nullable="true" length="32" comment="Order ID"/>
+        <column xsi:type="int" name="callback_amount" unsigned="true" nullable="true" comment="Amount processed for the order"/>
+        <column xsi:type="varchar" name="reference_tid" nullable="true" length="32" comment="Reference TID for the Novalnet order"/>
+        <column xsi:type="timestamp" name="callback_datetime" on_update="true" nullable="true" default="CURRENT_TIMESTAMP"
+                comment="Timestamp for the callback execution"/>
+        <column xsi:type="varchar" name="callback_tid" nullable="true" length="32" comment="Callback TID for the Novalnet order"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <index referenceId="NOVALNET_PAYMENT_CALLBACK_ORDER_ID" indexType="btree">
+            <column name="order_id"/>
+        </index>
+    </table>
+    <table name="novalnet_payment_transactionstatus" resource="default" engine="innodb" comment="Novalnet Transaction details">
+        <column xsi:type="int" name="id" unsigned="true" nullable="false" identity="true" comment="Entity ID"/>
+        <column xsi:type="varchar" name="order_id" nullable="true" length="32" comment="Order ID"/>
+        <column xsi:type="varchar" name="tid" nullable="true" length="32" comment="Transaction ID"/>
+        <column xsi:type="varchar" name="status" nullable="true" length="64" comment="Transaction status for the Novalnet order"/>
+        <column xsi:type="varchar" name="customer_id" nullable="true" length="32" comment="Customer ID"/>
+        <column xsi:type="varchar" name="payment_method" nullable="true" length="128" comment="Payment Type of Transaction"/>
+        <column xsi:type="varchar" name="token" nullable="true" length="255" comment="Payment token"/>
+        <column xsi:type="text" name="token_info" nullable="true" comment="Payment token Information"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <index referenceId="NOVALNET_PAYMENT_TRANSACTIONSTATUS_CUSTOMER_ID" indexType="btree">
+            <column name="customer_id"/>
+        </index>
+        <index referenceId="NOVALNET_PAYMENT_TRANSACTIONSTATUS_ORDER_ID" indexType="btree">
+            <column name="order_id"/>
+        </index>
+    </table>
+</schema>

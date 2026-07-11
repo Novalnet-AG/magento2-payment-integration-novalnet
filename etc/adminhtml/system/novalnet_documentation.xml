@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Novalnet payment extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Novalnet End User License Agreement
+ * that is bundled with this package in the file LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category   Novalnet
+ * @package    Novalnet_Payment
+ * @copyright  Copyright (c) Novalnet AG
+ * @license    https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+-->
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <group id="nnconfig_doc" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+         <label>Documentation</label>
+        <comment><![CDATA[Please read the Installation Guide before you start and login to the <a href='https://admin.novalnet.de/' target='_blank'> Novalnet Admin Portal </a> using your merchant account. To get a merchant account, mail to <a href='mailto:sales@novalnet.de'>sales@novalnet.de</a> or call +49 (089) 923068320]]></comment>
+        <field id="version" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <frontend_model>Novalnet\Payment\Block\System\Config\Form\Field\ModuleVersion</frontend_model>
+            <label>Module version</label>
+            <config_path>payment/novalnet/version</config_path>
+        </field>
+    </group>
+</include>
